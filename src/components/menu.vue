@@ -297,7 +297,7 @@ this.getRole()
             </ul>
           </div>
         </li>
-<div class="d-none" >
+<div  >
         <li class="nav-item">
           <BLink class="nav-link menu-link" href="#sidebarApps" data-bs-toggle="collapse" role="button"
             aria-expanded="false" aria-controls="sidebarApps">

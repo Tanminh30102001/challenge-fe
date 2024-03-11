@@ -71,7 +71,7 @@ export default {
       dataEdit: false,
       deleteModal: false,
       event: {
-        _id: "",
+        id: "",
         taskId: "",
         name: "",
         type:"",
@@ -254,16 +254,18 @@ export default {
         if (
           this.submitted &&
           this.event.name &&
+          this.event.desc&&
           this.event.created_id &&
           this.event.deadline &&
           this.event.status &&
-          this.event.priority
+          this.event.priority&&
+          this.event.type
+          &&   this.event.assigned_to.length > 0
         ) {
           this.taskListModal = false;
-          
           axios
             .patch(
-              `https://api-node.themesbrand.website/apps/task/${this.event._id}`,
+              `${config.API_URL}/updateTask/${this.event.id}`,
               this.event
             )
             .then((response) => {
@@ -320,9 +322,11 @@ export default {
     },
 
     editDetails(data) {
+      // console.log(data)
       this.dataEdit = true;
       this.taskListModal = true;
       this.event = { ...data };
+      console.log(this.event)
       this.submitted = false;
     },
 
@@ -639,7 +643,7 @@ export default {
                         <input class="form-check-input" type="checkbox" id="checkAll" value="option" />
                       </div>
                     </th>
-                    <th class="sort" data-sort="id" @click="onSort('taskId')">ID</th>
+                    <th class="sort" data-sort="id" @click="onSort('task_code')">ID</th>
                     <th class="sort" data-sort="project_name" @click="onSort('project')">
                       Type
                     </th>
