@@ -67,7 +67,13 @@ export default {
 
       //
       submitted: false,
-
+      //
+      search: "",
+      type: null,
+      priority: null,
+      status: null,
+      datefilter: null,
+      //
       dataEdit: false,
       deleteModal: false,
       event: {
@@ -225,10 +231,28 @@ export default {
       try {
         const response = await axios.get(config.API_URL + "/allTask");
         this.allTask = response.data;
-
+        console.log(this.allTask)
       } catch (error) {
         console.error(error);
       }
+    },
+    filterData(){
+        const filterdata={
+          date:this.datefilter,
+          status_id:this.status,
+          type_id:this.type,
+          priority:this.priority
+        }
+        console.log(filterdata)
+        axios.post(`${config.API_URL}/filterAllTask`, filterdata)
+  .then(response => {
+    this.allTask=response.data
+    console.log(this.allTask);
+  })
+  .catch(error => {
+    // Xử lý lỗi nếu có
+    console.error('Error:', error);
+  })
     },
     formatDateTo(dateString) {
       // Tạo một đối tượng Date từ chuỗi ngày
@@ -595,33 +619,64 @@ export default {
           <BCardBody class="border border-dashed border-end-0 border-start-0">
             <BFrom>
               <BRow class="g-3">
-                <BCol xxl="5" sm="12">
+                <BCol xxl="3" sm="12">
                   <div class="search-box">
-                    <input type="text" class="form-control search bg-light border-light"
-                      placeholder="Search for tasks or something..." />
+                    <input
+                      type="text"
+                      class="form-control search bg-light border-light"
+                      placeholder="Search for task name or task ID"
+                      v-model="search"
+                    />
                     <i class="ri-search-line search-icon"></i>
                   </div>
                 </BCol>
 
-                <BCol xxl="3" sm="4">
-                  <flat-pickr v-model="filterdate1" placeholder="Select date" :config="rangeDateconfig"
-                    class="form-control bg-light border-light"></flat-pickr>
+                <BCol xxl="2" sm="4">
+                  <flat-pickr
+                    v-model="datefilter"
+                    placeholder="Select date"
+                    class="form-control bg-light border-light"
+                  ></flat-pickr>
                 </BCol>
 
-                <BCol xxl="3" sm="4">
+                <BCol xxl="2" sm="4">
                   <div class="input-light">
-                    <Multiselect v-model="filtervalue1" :close-on-select="true" :searchable="true" :create-option="true"
-                      :options="[
-                    { value: 'All', label: 'All' },
-                    { value: 'New', label: 'New' },
-                    { value: 'Pending', label: 'Pending' },
-                    { value: 'Inprogress', label: 'Inprogress' },
-                    { value: 'Completed', label: 'Completed' },
-                  ]" />
+                    <Multiselect
+                      v-model="priority"
+                      :close-on-select="true"
+                      :searchable="true"
+                      :create-option="true"
+                      placeholder="Select Priority"
+                      :options="eventPriorityOptions"
+                    />
+                  </div>
+                </BCol>
+                <BCol xxl="2" sm="4">
+                  <div class="input-light">
+                    <Multiselect
+                      v-model="status"
+                      :close-on-select="true"
+                      :searchable="true"
+                      :create-option="true"
+                      placeholder="Select Status"
+                      :options="eventStatusOptions"
+                    />
+                  </div>
+                </BCol>
+                <BCol xxl="2" sm="4">
+                  <div class="input-light">
+                    <Multiselect
+                      v-model="type"
+                      :close-on-select="true"
+                      :searchable="true"
+                      :create-option="true"
+                      placeholder="Select Type"
+                      :options="eventTypeOptions"
+                    />
                   </div>
                 </BCol>
                 <BCol xxl="1" sm="4">
-                  <BButton type="button" variant="primary" class="w-100">
+                  <BButton type="button" variant="primary" @click="filterData">
                     <i class="ri-equalizer-fill me-1 align-bottom"></i>
                     Filters
                   </BButton>
@@ -634,42 +689,34 @@ export default {
               <table class="table align-middle table-nowrap mb-0" id="tasksTable">
                 <thead class="table-light text-muted">
                   <tr>
-                    <th scope="col" style="width: 40px">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="checkAll" value="option" />
-                      </div>
-                    </th>
-                    <th class="sort" data-sort="id" @click="onSort('task_code')">ID</th>
-                    <th class="sort" data-sort="project_name" @click="onSort('project')">
+
+                    <th >ID</th>
+                    <th>
                       Type
                     </th>
-                    <th class="sort" data-sort="tasks_name" @click="onSort('task')">
+                    <th>
                       Name
                     </th>
-                    <th class="sort" data-sort="client_name" @click="onSort('creater')">
+                    <th>
                       Created By
                     </th>
-                    <th class="sort" data-sort="assignedto" @click="onSort('subItem')">
+                    <th >
                       Assigned To
                     </th>
-                    <th class="sort" data-sort="due_date" @click="onSort('dueDate')">
+                    <th >
                       Deadline Date
                     </th>
-                    <th class="sort" data-sort="status" @click="onSort('status')">
+                    <th >
                       Status
                     </th>
-                    <th class="sort" data-sort="priority" @click="onSort('priority')">
+                    <th >
                       Priority
                     </th>
                   </tr>
                 </thead>
                 <tbody class="list form-check-all">
                   <tr v-for="(task, index) of resultQuery" :key="index">
-                    <th scope="row">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="chk_child" value="option1" />
-                      </div>
-                    </th>
+                  
                     <td class="id">
                       <router-link to="/apps/tasks-details" class="fw-medium link-primary">{{ task.task_code }}
                       </router-link>

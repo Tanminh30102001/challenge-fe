@@ -15,7 +15,6 @@ import simplebar from "simplebar-vue";
 export default {
   data() {
     return {
-
       taskListModal: false,
       date3: null,
       rangeDateconfig: {
@@ -79,7 +78,7 @@ export default {
       },
 
       //search
-      search: '',
+      search: "",
       type: null,
       priority: null,
       status: null,
@@ -88,7 +87,6 @@ export default {
     };
   },
   components: {
-
     Layout,
     PageHeader,
     lottie: Lottie,
@@ -151,13 +149,10 @@ export default {
   created() {
     this.setPages();
     this.fetchTasks();
-    this.fetchStatus()
+    this.fetchStatus();
     this.fetchType();
-    this.fetchPriority()
-    this.fetchUser()
-
-
-
+    this.fetchPriority();
+    this.fetchUser();
   },
   filters: {
     trimWords(value) {
@@ -177,7 +172,10 @@ export default {
       try {
         const response = await axios.get(config.API_URL + "/getStatus");
         this.allStatus = response.data;
-        this.eventStatusOptions = this.allStatus.map(priority => ({ value: priority.id, label: priority.name }));
+        this.eventStatusOptions = this.allStatus.map((priority) => ({
+          value: priority.id,
+          label: priority.name,
+        }));
       } catch (error) {
         console.error(error);
       }
@@ -186,7 +184,10 @@ export default {
       try {
         const response = await axios.get(config.API_URL + "/getPriority");
         this.allPriority = response.data;
-        this.eventPriorityOptions = this.allPriority.map(priority => ({ value: priority.id, label: priority.name }))
+        this.eventPriorityOptions = this.allPriority.map((priority) => ({
+          value: priority.id,
+          label: priority.name,
+        }));
       } catch (error) {
         console.error(error);
       }
@@ -195,21 +196,43 @@ export default {
       try {
         const response = await axios.get(config.API_URL + "/getType");
         this.allType = response.data;
-        this.eventTypeOptions = this.allType.map(priority => ({ value: priority.id, label: priority.name }));
+        this.eventTypeOptions = this.allType.map((priority) => ({
+          value: priority.id,
+          label: priority.name,
+        }));
       } catch (error) {
         console.error(error);
       }
     },
     async fetchTasks() {
       try {
-        this.user_id = JSON.parse(localStorage.getItem('user')).id;
+        this.user_id = JSON.parse(localStorage.getItem("user")).id;
         console.log(this.user_id);
-        const response = await axios.get(`${config.API_URL}/getTaskByUser/${this.user_id}`);
+        const response = await axios.get(
+          `${config.API_URL}/getTaskByUser/${this.user_id}`
+        );
         this.allTask = response.data;
-        console.log(response)
+        console.log(this.allTask);
       } catch (error) {
         console.error(error);
       }
+    },
+    filterData(){
+        const filterdata={
+          status_id:this.status,
+          type_id:this.type,
+          priority:this.priority
+        }
+        console.log(filterdata)
+        axios.post(`${config.API_URL}/fillterWithUser/${this.user_id}`, filterdata)
+  .then(response => {
+    this.allTask=response.data
+    console.log(this.allTask);
+  })
+  .catch(error => {
+    // Xử lý lỗi nếu có
+    console.error('Error:', error);
+  })
     },
     formatDateTo(dateString) {
       // Tạo một đối tượng Date từ chuỗi ngày
@@ -217,8 +240,8 @@ export default {
 
       // Lấy các thành phần ngày, tháng, năm
       const year = date.getFullYear();
-      const month = ('0' + (date.getMonth() + 1)).slice(-2); // Thêm số 0 phía trước nếu cần
-      const day = ('0' + date.getDate()).slice(-2); // Thêm số 0 phía trước nếu cần
+      const month = ("0" + (date.getMonth() + 1)).slice(-2); // Thêm số 0 phía trước nếu cần
+      const day = ("0" + date.getDate()).slice(-2); // Thêm số 0 phía trước nếu cần
 
       // Tạo chuỗi định dạng ngày tháng năm
       const formattedDate = `${year}-${month}-${day}`;
@@ -226,12 +249,11 @@ export default {
       return formattedDate;
     },
     handleSubmit() {
-      this.event.assigned_to = this.assignedTo
+      this.event.assigned_to = this.assignedTo;
       this.event.deadline = this.formatDateTo(this.event.deadline);
       if (this.dataEdit) {
         this.submitted = true;
-        this.event.created_id = JSON.parse(localStorage.getItem('user')).id;
-
+        this.event.created_id = JSON.parse(localStorage.getItem("user")).id;
 
         if (
           this.submitted &&
@@ -241,15 +263,12 @@ export default {
           this.event.deadline &&
           this.event.status &&
           this.event.priority &&
-          this.event.type
-          && this.event.assigned_to.length > 0
+          this.event.type &&
+          this.event.assigned_to.length > 0
         ) {
           this.taskListModal = false;
           axios
-            .patch(
-              `${config.API_URL}/updateTask/${this.event.id}`,
-              this.event
-            )
+            .patch(`${config.API_URL}/updateTask/${this.event.id}`, this.event)
             .then((response) => {
               const data = response.data.data;
               this.allTask = this.allTask.map((item) =>
@@ -262,8 +281,8 @@ export default {
         }
       } else {
         this.submitted = true;
-        this.event.created_id = JSON.parse(localStorage.getItem('user')).id;
-        console.log(this.event.assigned_to, 'sss')
+        this.event.created_id = JSON.parse(localStorage.getItem("user")).id;
+        console.log(this.event.assigned_to, "sss");
         if (
           this.submitted &&
           this.event.name &&
@@ -272,24 +291,23 @@ export default {
           this.event.deadline &&
           this.event.status &&
           this.event.priority &&
-          this.event.type
-          && this.event.assigned_to.length > 0
+          this.event.type &&
+          this.event.assigned_to.length > 0
         ) {
-          console.log('this.event', this.event)
+          console.log("this.event", this.event);
           // this.event.assigned_to = this.assignedTo;
           this.taskListModal = false;
 
           axios
             .post(config.API_URL + "/addTask", this.event)
             .then((response) => {
-              console.log(response.data)
+              console.log(response.data);
               this.allTask.unshift(response.data.data);
             })
             .catch((er) => {
               console.log(er);
             });
         }
-
       }
     },
 
@@ -308,7 +326,7 @@ export default {
       this.dataEdit = true;
       this.taskListModal = true;
       this.event = { ...data };
-      console.log(this.event)
+      console.log(this.event);
       this.submitted = false;
     },
 
@@ -399,8 +417,7 @@ export default {
     },
   },
   mounted() {
-
-    console.log(this.allPriority, 'this.allPriority')
+    console.log(this.allPriority, "this.allPriority");
     var checkAll = document.getElementById("checkAll");
     if (checkAll) {
       checkAll.onclick = function () {
@@ -473,42 +490,66 @@ export default {
               <BRow class="g-3">
                 <BCol xxl="3" sm="12">
                   <div class="search-box">
-                    <input type="text" class="form-control search bg-light border-light"
-                      placeholder="Search for task name or task ID" v-model="search" />
+                    <input
+                      type="text"
+                      class="form-control search bg-light border-light"
+                      placeholder="Search for task name or task ID"
+                      v-model="search"
+                    />
                     <i class="ri-search-line search-icon"></i>
                   </div>
                 </BCol>
 
                 <BCol xxl="2" sm="4">
-                  <flat-pickr v-model="datefilter" placeholder="Select date"
-                    class="form-control bg-light border-light"></flat-pickr>
+                  <flat-pickr
+                    v-model="datefilter"
+                    placeholder="Select date"
+                    class="form-control bg-light border-light"
+                  ></flat-pickr>
                 </BCol>
 
                 <BCol xxl="2" sm="4">
                   <div class="input-light">
-                    <Multiselect v-model="priority" :close-on-select="true" :searchable="true" :create-option="true" placeholder="Select Priority"
-                      :options="eventPriorityOptions" />
+                    <Multiselect
+                      v-model="priority"
+                      :close-on-select="true"
+                      :searchable="true"
+                      :create-option="true"
+                      placeholder="Select Priority"
+                      :options="eventPriorityOptions"
+                    />
                   </div>
                 </BCol>
                 <BCol xxl="2" sm="4">
                   <div class="input-light">
-                    <Multiselect v-model="status" :close-on-select="true" :searchable="true" :create-option="true" placeholder="Select Status"
-                      :options="eventStatusOptions" />
+                    <Multiselect
+                      v-model="status"
+                      :close-on-select="true"
+                      :searchable="true"
+                      :create-option="true"
+                      placeholder="Select Status"
+                      :options="eventStatusOptions"
+                    />
                   </div>
                 </BCol>
                 <BCol xxl="2" sm="4">
                   <div class="input-light">
-                    <Multiselect v-model="type" :close-on-select="true" :searchable="true" :create-option="true" placeholder="Select Type"
-                      :options="eventTypeOptions" />
+                    <Multiselect
+                      v-model="type"
+                      :close-on-select="true"
+                      :searchable="true"
+                      :create-option="true"
+                      placeholder="Select Type"
+                      :options="eventTypeOptions"
+                    />
                   </div>
                 </BCol>
                 <BCol xxl="1" sm="4">
-                  <BButton type="button" variant="primary" @click="filter">
+                  <BButton type="button" variant="primary" @click="filterData">
                     <i class="ri-equalizer-fill me-1 align-bottom"></i>
                     Filters
                   </BButton>
                 </BCol>
-
               </BRow>
             </BFrom>
           </BCardBody>
@@ -518,38 +559,27 @@ export default {
                 <thead class="table-light text-muted">
                   <tr>
                     <th>ID</th>
-                    <th>
-                      Type
-                    </th>
-                    <th>
-                      Name
-                    </th>
-                    <th>
-                      Created By
-                    </th>
-                    <th>
-                      Assigned To
-                    </th>
-                    <th>
-                      Deadline Date
-                    </th>
-                    <th>
-                      Status
-                    </th>
-                    <th>
-                      Priority
-                    </th>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Created By</th>
+                    <th>Assigned To</th>
+                    <th>Deadline Date</th>
+                    <th>Status</th>
+                    <th>Priority</th>
                   </tr>
                 </thead>
                 <tbody class="list form-check-all">
                   <tr v-for="(task, index) of resultQuery" :key="index">
-
                     <td class="id">
-                      <router-link to="/apps/tasks-details" class="fw-medium link-primary">{{ task.task_code }}
+                      <router-link to="/apps/tasks-details" class="fw-medium link-primary"
+                        >{{ task.task_code }}
                       </router-link>
                     </td>
                     <td class="project_name">
-                      <router-link to="/apps/projects-overview" class="fw-medium link-primary">{{ task.type_task }}
+                      <router-link
+                        to="/apps/projects-overview"
+                        class="fw-medium link-primary"
+                        >{{ task.type_task }}
                       </router-link>
                     </td>
                     <td>
@@ -560,14 +590,18 @@ export default {
                         <div class="flex-shrink-0 ms-4">
                           <ul class="list-inline tasks-list-menu mb-0">
                             <li class="list-inline-item">
-                              <router-link to="/apps/tasks-details"><i
-                                  class="ri-eye-fill align-bottom me-2 text-muted"></i></router-link>
+                              <router-link to="/apps/tasks-details"
+                                ><i class="ri-eye-fill align-bottom me-2 text-muted"></i
+                              ></router-link>
                             </li>
                             <li class="list-inline-item" @click="editDetails(task)">
-                              <BLink href="#"><i class="ri-pencil-fill align-bottom me-2 text-muted"></i></BLink>
+                              <BLink href="#"
+                                ><i
+                                  class="ri-pencil-fill align-bottom me-2 text-muted"
+                                ></i
+                              ></BLink>
                             </li>
-                            <li class="list-inline-item">
-                            </li>
+                            <li class="list-inline-item"></li>
                           </ul>
                         </div>
                       </div>
@@ -575,9 +609,17 @@ export default {
                     <td class="client_name">{{ task.created_user }}</td>
                     <td class="assignedto">
                       <div class="flex-grow-1 ms-2">
-                        <div v-for="(task, index) of task.user_fullnames" :key="index" class="avatar-group-item">
-                          <BLink href="javascript: void(0);" :data-bs-toggle="task.name" v-b-tooltip.hover
-                            :title="task.name">
+                        <div
+                          v-for="(task, index) of task.user_fullnames"
+                          :key="index"
+                          class="avatar-group-item"
+                        >
+                          <BLink
+                            href="javascript: void(0);"
+                            :data-bs-toggle="task.name"
+                            v-b-tooltip.hover
+                            :title="task.name"
+                          >
                             <div class="mr-1">
                               <span style="margin-right: 12px">{{ task.name }}</span>
                             </div>
@@ -587,28 +629,40 @@ export default {
                     </td>
                     <td class="due_date">{{ task.deadline }}</td>
                     <td class="status">
-                      <span class="badge text-uppercase" :class="{
-                    'bg-secondary-subtle text-secondary':
-                      task.status_task == 'In Process',
-                    'bg-info-subtle text-info': task.status_task == 'Not Start',
-                    'bg-success-subtle text-success': task.status_task == 'Done ',
-                    'bg-warning-subtle text-warning': task.status_task == 'Pending',
-                  }">{{ task.status_task }}</span>
+                      <span
+                        class="badge text-uppercase"
+                        :class="{
+                          'bg-secondary-subtle text-secondary':
+                            task.status_task == 'In Process',
+                          'bg-info-subtle text-info': task.status_task == 'Not Start',
+                          'bg-success-subtle text-success': task.status_task == 'Done ',
+                          'bg-warning-subtle text-warning': task.status_task == 'Pending',
+                        }"
+                        >{{ task.status_task }}</span
+                      >
                     </td>
                     <td class="priority">
-                      <span class="badge text-uppercase" :class="{
-                    'bg-danger': task.priority_task == 'High',
-                    'bg-success': task.priority_task == 'Low',
-                    'bg-warning': task.priority_task == 'Medium',
-                  }">{{ task.priority_task }}</span>
+                      <span
+                        class="badge text-uppercase"
+                        :class="{
+                          'bg-danger': task.priority_task == 'High',
+                          'bg-success': task.priority_task == 'Low',
+                          'bg-warning': task.priority_task == 'Medium',
+                        }"
+                        >{{ task.priority_task }}</span
+                      >
                     </td>
                   </tr>
                 </tbody>
               </table>
               <div class="noresult" v-if="resultQuery.length < 1">
                 <div class="text-center">
-                  <lottie colors="primary:#121331,secondary:#08a88a" :options="defaultOptions" :height="75"
-                    :width="75" />
+                  <lottie
+                    colors="primary:#121331,secondary:#08a88a"
+                    :options="defaultOptions"
+                    :height="75"
+                    :width="75"
+                  />
                   <h5 class="mt-2">Sorry! No Result Found</h5>
                   <p class="text-muted mb-0">
                     We've searched more than 200k+ tasks We did not find any tasks for you
@@ -620,18 +674,32 @@ export default {
 
             <div class="d-flex justify-content-end" v-if="resultQuery.length >= 1">
               <div class="pagination-wrap hstack gap-2">
-                <BLink class="page-item pagination-prev" href="#" :disabled="page <= 1" @click="page--">
+                <BLink
+                  class="page-item pagination-prev"
+                  href="#"
+                  :disabled="page <= 1"
+                  @click="page--"
+                >
                   Previous
                 </BLink>
                 <ul class="pagination listjs-pagination mb-0">
-                  <li :class="{ active: pageNumber == page, disabled: pageNumber == '...' }"
-                    v-for="(pageNumber, index) in pages" :key="index" @click="page = pageNumber">
+                  <li
+                    :class="{ active: pageNumber == page, disabled: pageNumber == '...' }"
+                    v-for="(pageNumber, index) in pages"
+                    :key="index"
+                    @click="page = pageNumber"
+                  >
                     <BLink class="page" href="#" data-i="1" data-page="8">{{
-                    pageNumber
-                  }}</BLink>
+                      pageNumber
+                    }}</BLink>
                   </li>
                 </ul>
-                <BLink class="page-item pagination-next" href="#" :disabled="page >= pages.length" @click="page++">
+                <BLink
+                  class="page-item pagination-next"
+                  href="#"
+                  :disabled="page >= pages.length"
+                  @click="page++"
+                >
                   Next
                 </BLink>
               </div>
@@ -642,23 +710,44 @@ export default {
     </BRow>
 
     <!-- task list modal -->
-    <BModal v-model="taskListModal" id="showmodal" modal-class="zoomIn" hide-footer
-      header-class="p-3 bg-info-subtle taskModal" class="v-modal-custom" centered size="lg"
-      :title="dataEdit ? 'Edit Task' : 'Add Task'">
+    <BModal
+      v-model="taskListModal"
+      id="showmodal"
+      modal-class="zoomIn"
+      hide-footer
+      header-class="p-3 bg-info-subtle taskModal"
+      class="v-modal-custom"
+      centered
+      size="lg"
+      :title="dataEdit ? 'Edit Task' : 'Add Task'"
+    >
       <BFrom id="addform" class="tablelist-form" autocomplete="off">
         <BRow class="g-3">
           <input type="hidden" id="id" name="" />
           <BCol lg="12">
             <label for="projectName-field" class="form-label">Task Name</label>
-            <input type="text" id="projectName" class="form-control" placeholder="Task Name" v-model="event.name"
-              :class="{ 'is-invalid': submitted && !event.name }" />
+            <input
+              type="text"
+              id="projectName"
+              class="form-control"
+              placeholder="Task Name"
+              v-model="event.name"
+              :class="{ 'is-invalid': submitted && !event.name }"
+            />
             <div class="invalid-feedback">Please enter a Task Name.</div>
           </BCol>
           <BCol lg="12">
             <div>
               <label for="tasksTitle-field" class="form-label">Desc</label>
-              <textarea rows="3" type="text" id="tasksTitle" class="form-control" placeholder="Description of task"
-                v-model="event.desc" :class="{ 'is-invalid': submitted && !event.desc }"></textarea>
+              <textarea
+                rows="3"
+                type="text"
+                id="tasksTitle"
+                class="form-control"
+                placeholder="Description of task"
+                v-model="event.desc"
+                :class="{ 'is-invalid': submitted && !event.desc }"
+              ></textarea>
               <div class="invalid-feedback">Please enter a Description.</div>
             </div>
           </BCol>
@@ -668,11 +757,23 @@ export default {
               <ul class="list-unstyled vstack gap-2 mb-0">
                 <li v-for="(data, index) of allUser" :key="index">
                   <div class="form-check d-flex align-items-center">
-                    <input class="form-check-input me-3" type="checkbox" :value="data.id" :id="'checkbox_' + data.id"
-                      v-model="assignedTo" />
-                    <label class="form-check-label d-flex align-items-center" :for="'checkbox_' + data.id">
+                    <input
+                      class="form-check-input me-3"
+                      type="checkbox"
+                      :value="data.id"
+                      :id="'checkbox_' + data.id"
+                      v-model="assignedTo"
+                    />
+                    <label
+                      class="form-check-label d-flex align-items-center"
+                      :for="'checkbox_' + data.id"
+                    >
                       <span class="flex-shrink-0">
-                        <img src="@/assets/images/users/avatar-2.jpg" alt="" class="avatar-xxs rounded-circle" />
+                        <img
+                          src="@/assets/images/users/avatar-2.jpg"
+                          alt=""
+                          class="avatar-xxs rounded-circle"
+                        />
                       </span>
                       <span class="flex-grow-1 ms-2">{{ data.username }}</span>
                     </label>
@@ -685,34 +786,64 @@ export default {
 
           <BCol lg="6">
             <label for="duedate-field" class="form-label">Deadline Date</label>
-            <flat-pickr placeholder="Select date" :config="timeConfig" class="form-control flatpickr-input" id="date"
-              v-model="event.deadline" :class="{ 'is-invalid': submitted && !event.deadline }"></flat-pickr>
+            <flat-pickr
+              placeholder="Select date"
+              :config="timeConfig"
+              class="form-control flatpickr-input"
+              id="date"
+              v-model="event.deadline"
+              :class="{ 'is-invalid': submitted && !event.deadline }"
+            ></flat-pickr>
             <div class="invalid-feedback">Please enter a date name.</div>
           </BCol>
           <BCol lg="6">
             <label for="ticket-status" class="form-label">Status</label>
-            <Multiselect id="statusid" :close-on-select="true" :searchable="true" :create-option="true"
-              :options="eventStatusOptions" v-model="event.status"
-              :class="{ 'is-invalid': submitted && !event.status }" />
+            <Multiselect
+              id="statusid"
+              :close-on-select="true"
+              :searchable="true"
+              :create-option="true"
+              :options="eventStatusOptions"
+              v-model="event.status"
+              :class="{ 'is-invalid': submitted && !event.status }"
+            />
             <div class="invalid-feedback">Please select a status.</div>
           </BCol>
           <BCol lg="6">
             <label for="priority-field" class="form-label">Priority</label>
-            <Multiselect id="priority" :close-on-select="true" :searchable="true" :create-option="true"
-              :options="eventPriorityOptions" v-model="event.priority"
-              :class="{ 'is-invalid': submitted && !event.priority }" />
+            <Multiselect
+              id="priority"
+              :close-on-select="true"
+              :searchable="true"
+              :create-option="true"
+              :options="eventPriorityOptions"
+              v-model="event.priority"
+              :class="{ 'is-invalid': submitted && !event.priority }"
+            />
             <div class="invalid-feedback">Please select a priority.</div>
           </BCol>
           <BCol lg="6">
             <label for="priority-field" class="form-label">Type of Task</label>
-            <Multiselect id="Type" :close-on-select="true" :searchable="true" :create-option="true"
-              :options="eventTypeOptions" v-model="event.type" :class="{ 'is-invalid': submitted && !event.type }" />
+            <Multiselect
+              id="Type"
+              :close-on-select="true"
+              :searchable="true"
+              :create-option="true"
+              :options="eventTypeOptions"
+              v-model="event.type"
+              :class="{ 'is-invalid': submitted && !event.type }"
+            />
             <div class="invalid-feedback">Please select a priority.</div>
           </BCol>
         </BRow>
 
         <div class="hstack gap-2 justify-content-end mt-3">
-          <BButton type="button" variant="light" @click="taskListModal = false" id="closemodal">
+          <BButton
+            type="button"
+            variant="light"
+            @click="taskListModal = false"
+            id="closemodal"
+          >
             Close
           </BButton>
           <BButton type="submit" variant="success" id="add-btn" @click="handleSubmit">
@@ -723,10 +854,21 @@ export default {
     </BModal>
 
     <!-- delete modal -->
-    <BModal v-model="deleteModal" modal-class="zoomIn" hide-footer no-close-on-backdrop centered>
+    <BModal
+      v-model="deleteModal"
+      modal-class="zoomIn"
+      hide-footer
+      no-close-on-backdrop
+      centered
+    >
       <div class="mt-2 text-center">
-        <lottie class="avatar-xl" colors="primary:#f7b84b,secondary:#f06548" :options="defaultOptions1" :height="75"
-          :width="75" />
+        <lottie
+          class="avatar-xl"
+          colors="primary:#f7b84b,secondary:#f06548"
+          :options="defaultOptions1"
+          :height="75"
+          :width="75"
+        />
         <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
           <h4>Are you sure ?</h4>
           <p class="text-muted mx-4 mb-0">
@@ -736,7 +878,9 @@ export default {
       </div>
       <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
         <BButton variant="light" size="w-sm" @click="deleteModal = false">Close</BButton>
-        <BButton variant="danger" size="w-sm" id="delete-record" @click="deleteData">Yes, Delete It!</BButton>
+        <BButton variant="danger" size="w-sm" id="delete-record" @click="deleteData"
+          >Yes, Delete It!</BButton
+        >
       </div>
     </BModal>
   </Layout>
