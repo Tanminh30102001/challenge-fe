@@ -86,23 +86,22 @@ export default {
       // stop here if form is invalid
       this.v$.$touch();
       try{
-        this.user.phone = `+${this.countries[this.selectedCountry].dial_code} ${this.user.phone}`
-      this.user.country_name=this.countries[this.selectedCountry].country
-      this.user.country_code=this.selectedCountry
+      //   this.user.phone = `+${this.countries[this.selectedCountry].dial_code} ${this.user.phone}`
+      // this.user.country_name=this.countries[this.selectedCountry].country
+      // this.user.country_code=this.selectedCountry
       this.v$.$touch();
-      const result = await axios.post(config.API_URL + '/user/register', {
+      const result = await axios.post(config.API_URL + '/register', {
         username:this.user.username,
         email: this.user.email,
         password: this.user.password,
-        re_password: this.user.confirm_password,
+        // re_password: this.user.confirm_password,
         fullname:this.user.fullname,
-        phone:this.user.phone,
-        country_name:this.user.country_name,
-        country_code:this.user.country_code,
-        referral_code:this.user.referral_code
+        // phone:this.user.phone,
+        // country_name:this.user.country_name,
+        // country_code:this.user.country_code,
+        // referral_code:this.user.referral_code
       });
       console.log(result.status)
-
       if(result.status == 200){
         this.$router.push('/login');
         localStorage.setItem('alertSignUp',result.data.message)
@@ -209,14 +208,14 @@ export default {
                         }}</span>
                       </div>
                     </div>
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                       <label for="country" class="form-label">Country <span class="text-danger">*</span></label>
                       <select v-model="selectedCountry" @change="updateDialCode" class="form-select" id="country">
                         <option value="" disabled>Select a country</option>
                         <option v-for="(countryData, countryCode) in countries" :key="countryCode" :value="countryCode">{{ countryData.country }}</option>
                       </select>
-                    </div>
-                    <div class="mb-3">
+                    </div> -->
+                    <!-- <div class="mb-3">
                       <label for="phoneNumber" class="form-label">Phone Number <span class="text-danger">*</span></label>
                       <div class="input-group">
                         <span class="input-group-text" id="basic-addon1">+{{ user.dial_code }}</span>
@@ -227,7 +226,7 @@ export default {
                           }}</span>
                         </div>
                       </div>
-                    </div>
+                    </div> -->
                     <div class="mb-2">
                       <label for="userpassword" class="form-label">Password <span class="text-danger">*</span></label>
                       <input type="password" class="form-control" v-model="user.password" :class="{
@@ -240,7 +239,7 @@ export default {
                       </div>
                     </div>
 
-                    <div class="mb-2">
+                    <!-- <div class="mb-2">
                       <label for="userpassword" class="form-label">Confirm Password <span
                           class="text-danger">*</span></label>
                       <input type="password" class="form-control" v-model="user.confirm_password" :class="{
@@ -251,8 +250,8 @@ export default {
                             v$.user.confirm_password.required.$message
                         }}</span>
                       </div>
-                    </div>
-                    <div class="mb-3">
+                    </div> -->
+                    <!-- <div class="mb-3">
                       <label for="username" class="form-label">Referral Code <span class="text-danger">*</span></label>
                       <input type="text" class="form-control" v-model="user.referral_code" :class="{
                         'is-invalid': submitted && v$.user.referral_code.$error,
@@ -262,7 +261,7 @@ export default {
                             v$.user.referral_code.required.$message
                         }}</span>
                       </div>
-                    </div>
+                    </div> -->
                     <div class="mb-4">
                       <p class="mb-0 fs-12 text-muted fst-italic">By registering you agree to the Velzon <BLink
                           href="#" class="text-primary text-decoration-underline fst-normal fw-medium">Terms of Use

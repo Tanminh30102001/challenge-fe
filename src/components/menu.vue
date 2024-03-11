@@ -9,7 +9,11 @@ export default {
       settings: {
         minScrollbarLength: 60,
       },
+      role:1,
     };
+  },
+  created(){
+this.getRole()
   },
   computed: {
     ...layoutComputed,
@@ -126,6 +130,9 @@ export default {
   },
 
   methods: {
+    getRole(){
+      this.role=JSON.parse(localStorage.getItem('user')).role;
+    },
     onRoutechange(ele) {
       this.initActiveMenu(ele.path);
       if (document.getElementsByClassName("mm-active").length > 0) {
@@ -239,14 +246,14 @@ export default {
             </span>
           </BLink>
 
-          <BLink class="nav-link menu-link" href="#sidebarDashboards" role="button"
+          <BLink v-if="this.role===2" class="nav-link menu-link" href="#sidebarDashboards" role="button"
             aria-expanded="false" aria-controls="sidebarDashboards">
-            <router-link to="/member" class="nav-link px-0 py-0" >
+            <router-link to="/staffs" class="nav-link px-0 py-0" >
               <i class="ri-group-line"></i>
             </router-link>
             <span data-key="t-dashboards"> 
-              <router-link to="/member" class="nav-link" >
-                {{ $t("Member") }}
+              <router-link to="/staffs" class="nav-link" >
+                {{ $t("Staffs") }}
                 </router-link>
             </span>
           </BLink>
@@ -290,34 +297,7 @@ export default {
             </ul>
           </div>
         </li>
-        <li class="nav-item">
-          <BLink class="nav-link" href="#sidebarTasks" data-bs-toggle="collapse" role="button" aria-expanded="false"
-            aria-controls="sidebarTasks" data-key="t-tasks">
-            {{ $t("t-tasks") }}
-          </BLink>
-          <div class="collapse menu-dropdown" id="sidebarTasks">
-            <ul class="nav nav-sm flex-column">
-              <!-- <li class="nav-item">
-                <router-link to="/apps/tasks-kanban" class="nav-link" data-key="t-kanbanboard">
-                  {{ $t("t-kanbanboard") }}
-                </router-link>
-              </li> -->
-              <li class="nav-item">
-                <router-link to="/apps/tasks-list-view" class="nav-link" data-key="t-list-view">
-                  {{ $t("t-list-view") }}
-                </router-link>
-              </li>
-              <li class="nav-item">
-                <router-link to="/apps/tasks-details" class="nav-link" data-key="t-task-details">
-                  {{ $t("t-task-details") }}
-                </router-link>
-              </li>
-            </ul>
-          </div>
-        </li>
-
-        <!-- end Dashboard Menu -->
-<div  >
+<div class="d-none" >
         <li class="nav-item">
           <BLink class="nav-link menu-link" href="#sidebarApps" data-bs-toggle="collapse" role="button"
             aria-expanded="false" aria-controls="sidebarApps">

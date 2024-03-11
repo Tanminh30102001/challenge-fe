@@ -153,7 +153,7 @@ export default {
     this.fetchType();
     this.fetchPriority()
     this.fetchUser()
-    console.log(this.eventPriorityOptions,'ád')
+
   },
   filters: {
     trimWords(value) {

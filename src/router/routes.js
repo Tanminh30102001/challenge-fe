@@ -65,6 +65,18 @@ export default [
     },
     component: () => import("../views/apps/tasks/list-view"),
   },
+  //New Page 
+  {
+    path: "/staffs",
+    name: "Staff",
+    meta: {
+      title: "Staff",
+      authRequired: true,
+    },
+    component: () => import("../views/staffs/index.vue"),
+  },
+
+  ///
   /////////////////////////
   {
     path: "/member",
