@@ -259,10 +259,11 @@ this.getRole()
           <BLink class="nav-link menu-link" href="#sidebarDashboards" role="button"
           aria-expanded="false" aria-controls="sidebarDashboards">
           <router-link to="/assign-to-me" class="nav-link px-0 py-0" >
+            <i class="ri-share-fill"></i>
           </router-link>
           <span data-key="t-dashboards"> 
             <router-link to="/assign-to-me" class="nav-link" >
-              {{ $t("Assignee to me") }}
+               {{ $t("Assignee to me") }}
               </router-link>
           </span>
         </BLink>
@@ -306,7 +307,7 @@ this.getRole()
             </ul>
           </div>
         </li>
-<div class="d-none" >
+<div  >
         <li class="nav-item">
           <BLink class="nav-link menu-link" href="#sidebarApps" data-bs-toggle="collapse" role="button"
             aria-expanded="false" aria-controls="sidebarApps">

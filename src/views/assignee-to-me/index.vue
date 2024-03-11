@@ -15,7 +15,7 @@ import simplebar from "simplebar-vue";
 export default {
   data() {
     return {
-     
+
       taskListModal: false,
       date3: null,
       rangeDateconfig: {
@@ -46,10 +46,10 @@ export default {
       allPriority: [],
       allType: [],
       allUser: [],
-      eventPriorityOptions:[],
-      eventStatusOptions:[],
-      eventTypeOptions:[],
-      assignedTo:[],
+      eventPriorityOptions: [],
+      eventStatusOptions: [],
+      eventTypeOptions: [],
+      assignedTo: [],
       searchQuery: null,
       page: 1,
       perPage: 8,
@@ -60,31 +60,35 @@ export default {
       defaultOptions1: {
         animationData: animationData1,
       },
-
-      //
       submitted: false,
-
       dataEdit: false,
       deleteModal: false,
       event: {
         id: "",
         taskId: "",
         name: "",
-        type:"",
-        desc:"",
+        type: "",
+        desc: "",
         created_id: "",
         deadline: "",
         priority: "",
         project: "",
         assigned_to: [],
         status: "",
-        user_id:null,
+        user_id: null,
       },
+
+      //search
+      search: '',
+      type: null,
+      priority: null,
+      status: null,
+      datefilter: null,
       //
     };
   },
   components: {
-    
+
     Layout,
     PageHeader,
     lottie: Lottie,
@@ -127,7 +131,8 @@ export default {
         });
       } else if (this.filtervalue !== null) {
         return this.displayedPosts.filter((data) => {
-          if (data.status === this.filtervalue || this.filtervalue == "All") {
+          // if (data.status === this.filtervalue || this.filtervalue == "All") {
+          if (this.filtervalue == "All") {
             return data;
           } else {
             return null;
@@ -150,8 +155,8 @@ export default {
     this.fetchType();
     this.fetchPriority()
     this.fetchUser()
-   
-    
+
+
 
   },
   filters: {
@@ -159,30 +164,6 @@ export default {
       return value.split(" ").splice(0, 20).join(" ") + "...";
     },
   },
-  // beforeMount() {
-  //   axios.get(config.API_URL+'/allTask').then((data) => {
-  //     this.allTask = [];
-  //     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
-  //       "Oct", "Nov", "Dec"
-  //     ];
-  //     console.log(data)
-  //     data.data.forEach(row => {
-  //       var dd = new Date(row.dueDate);
-  //       row.dueDate = dd.getDate() + " " + monthNames[dd.getMonth()] + ", " + dd.getFullYear();
-  //       row.subItem.forEach(imag => {
-  //         imag.image_src = 'https://api-node.themesbrand.website/images/users/' + imag.img;
-  //       });
-
-  //       // row.image_src = `@/assets/images/products/img-8.png`;
-  //       // row.image_src = 'https://api-node.themesbrand.website/fileupload/users_bucket/' + row.img;
-  //       this.allTask.push(row);
-  //     });
-  //   }).catch((er) => {
-  //     console.log(er);
-  //   });
-
-  // },
-
   methods: {
     async fetchUser() {
       try {
@@ -221,9 +202,9 @@ export default {
     },
     async fetchTasks() {
       try {
-        this.user_id=JSON.parse(localStorage.getItem('user')).id;
+        this.user_id = JSON.parse(localStorage.getItem('user')).id;
         console.log(this.user_id);
-        const response = await axios.get( `${config.API_URL}/getTaskByUser/${this.user_id}`);
+        const response = await axios.get(`${config.API_URL}/getTaskByUser/${this.user_id}`);
         this.allTask = response.data;
         console.log(response)
       } catch (error) {
@@ -245,23 +226,23 @@ export default {
       return formattedDate;
     },
     handleSubmit() {
-      this.event.assigned_to=this.assignedTo
-      this.event.deadline=this.formatDateTo(this.event.deadline);
+      this.event.assigned_to = this.assignedTo
+      this.event.deadline = this.formatDateTo(this.event.deadline);
       if (this.dataEdit) {
         this.submitted = true;
-        this.event.created_id=JSON.parse(localStorage.getItem('user')).id;
-        
-        
+        this.event.created_id = JSON.parse(localStorage.getItem('user')).id;
+
+
         if (
           this.submitted &&
           this.event.name &&
-          this.event.desc&&
+          this.event.desc &&
           this.event.created_id &&
           this.event.deadline &&
           this.event.status &&
-          this.event.priority&&
+          this.event.priority &&
           this.event.type
-          &&   this.event.assigned_to.length > 0
+          && this.event.assigned_to.length > 0
         ) {
           this.taskListModal = false;
           axios
@@ -281,23 +262,23 @@ export default {
         }
       } else {
         this.submitted = true;
-        this.event.created_id=JSON.parse(localStorage.getItem('user')).id;
-        console.log( this.event.assigned_to,'sss')
+        this.event.created_id = JSON.parse(localStorage.getItem('user')).id;
+        console.log(this.event.assigned_to, 'sss')
         if (
           this.submitted &&
           this.event.name &&
-          this.event.desc&&
+          this.event.desc &&
           this.event.created_id &&
           this.event.deadline &&
           this.event.status &&
-          this.event.priority&&
+          this.event.priority &&
           this.event.type
-          &&   this.event.assigned_to.length > 0
+          && this.event.assigned_to.length > 0
         ) {
-          console.log('this.event',this.event)
+          console.log('this.event', this.event)
           // this.event.assigned_to = this.assignedTo;
           this.taskListModal = false;
-          
+
           axios
             .post(config.API_URL + "/addTask", this.event)
             .then((response) => {
@@ -308,7 +289,7 @@ export default {
               console.log(er);
             });
         }
-      
+
       }
     },
 
@@ -418,8 +399,8 @@ export default {
     },
   },
   mounted() {
-    
-    console.log(this.allPriority,'this.allPriority')
+
+    console.log(this.allPriority, 'this.allPriority')
     var checkAll = document.getElementById("checkAll");
     if (checkAll) {
       checkAll.onclick = function () {
@@ -477,9 +458,9 @@ export default {
               <h5 class="card-title mb-0 flex-grow-1">All Tasks</h5>
               <div class="flex-shrink-0">
                 <div class="d-flex flex-wrap gap-2">
-                  <BButton variant="soft-danger" class="me-1" id="remove-actions" @click="deleteMultiple">
+                  <!-- <BButton variant="soft-danger" class="me-1" id="remove-actions" @click="deleteMultiple">
                     <i class="ri-delete-bin-2-line"></i>
-                  </BButton>
+                  </BButton> -->
                   <BButton variant="danger" class="add-btn" @click="toggleModal">
                     <i class="ri-add-line align-bottom me-1"></i> Create Task
                   </BButton>
@@ -490,37 +471,44 @@ export default {
           <BCardBody class="border border-dashed border-end-0 border-start-0">
             <BFrom>
               <BRow class="g-3">
-                <BCol xxl="5" sm="12">
+                <BCol xxl="3" sm="12">
                   <div class="search-box">
                     <input type="text" class="form-control search bg-light border-light"
-                      placeholder="Search for tasks or something..." v-model="searchQuery" />
+                      placeholder="Search for task name or task ID" v-model="search" />
                     <i class="ri-search-line search-icon"></i>
                   </div>
                 </BCol>
 
-                <BCol xxl="3" sm="4">
-                  <flat-pickr v-model="filterdate1" placeholder="Select date" :config="rangeDateconfig"
+                <BCol xxl="2" sm="4">
+                  <flat-pickr v-model="datefilter" placeholder="Select date"
                     class="form-control bg-light border-light"></flat-pickr>
                 </BCol>
 
-                <BCol xxl="3" sm="4">
+                <BCol xxl="2" sm="4">
                   <div class="input-light">
-                    <Multiselect v-model="filtervalue1" :close-on-select="true" :searchable="true" :create-option="true"
-                      :options="[
-                    { value: 'All', label: 'All' },
-                    { value: 'New', label: 'New' },
-                    { value: 'Pending', label: 'Pending' },
-                    { value: 'Inprogress', label: 'Inprogress' },
-                    { value: 'Completed', label: 'Completed' },
-                  ]" />
+                    <Multiselect v-model="priority" :close-on-select="true" :searchable="true" :create-option="true" placeholder="Select Priority"
+                      :options="eventPriorityOptions" />
+                  </div>
+                </BCol>
+                <BCol xxl="2" sm="4">
+                  <div class="input-light">
+                    <Multiselect v-model="status" :close-on-select="true" :searchable="true" :create-option="true" placeholder="Select Status"
+                      :options="eventStatusOptions" />
+                  </div>
+                </BCol>
+                <BCol xxl="2" sm="4">
+                  <div class="input-light">
+                    <Multiselect v-model="type" :close-on-select="true" :searchable="true" :create-option="true" placeholder="Select Type"
+                      :options="eventTypeOptions" />
                   </div>
                 </BCol>
                 <BCol xxl="1" sm="4">
-                  <BButton type="button" variant="primary" class="w-100" @click="SearchData">
+                  <BButton type="button" variant="primary" @click="filter">
                     <i class="ri-equalizer-fill me-1 align-bottom"></i>
                     Filters
                   </BButton>
                 </BCol>
+
               </BRow>
             </BFrom>
           </BCardBody>
@@ -529,42 +517,33 @@ export default {
               <table class="table align-middle table-nowrap mb-0" id="tasksTable">
                 <thead class="table-light text-muted">
                   <tr>
-                    <th scope="col" style="width: 40px">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="checkAll" value="option" />
-                      </div>
-                    </th>
-                    <th class="sort" data-sort="id" @click="onSort('task_code')">ID</th>
-                    <th class="sort" data-sort="project_name" @click="onSort('project')">
+                    <th>ID</th>
+                    <th>
                       Type
                     </th>
-                    <th class="sort" data-sort="tasks_name" @click="onSort('task')">
+                    <th>
                       Name
                     </th>
-                    <th class="sort" data-sort="client_name" @click="onSort('creater')">
+                    <th>
                       Created By
                     </th>
-                    <th class="sort" data-sort="assignedto" @click="onSort('subItem')">
+                    <th>
                       Assigned To
                     </th>
-                    <th class="sort" data-sort="due_date" @click="onSort('dueDate')">
+                    <th>
                       Deadline Date
                     </th>
-                    <th class="sort" data-sort="status" @click="onSort('status')">
+                    <th>
                       Status
                     </th>
-                    <th class="sort" data-sort="priority" @click="onSort('priority')">
+                    <th>
                       Priority
                     </th>
                   </tr>
                 </thead>
                 <tbody class="list form-check-all">
                   <tr v-for="(task, index) of resultQuery" :key="index">
-                    <th scope="row">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="chk_child" value="option1" />
-                      </div>
-                    </th>
+
                     <td class="id">
                       <router-link to="/apps/tasks-details" class="fw-medium link-primary">{{ task.task_code }}
                       </router-link>
@@ -588,10 +567,6 @@ export default {
                               <BLink href="#"><i class="ri-pencil-fill align-bottom me-2 text-muted"></i></BLink>
                             </li>
                             <li class="list-inline-item">
-                              <BLink class="remove-item-btn" href="javascript:void(0);"
-                                @click="deleteModalToggle(task)">
-                                <i class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>
-                              </BLink>
                             </li>
                           </ul>
                         </div>
@@ -600,11 +575,7 @@ export default {
                     <td class="client_name">{{ task.created_user }}</td>
                     <td class="assignedto">
                       <div class="flex-grow-1 ms-2">
-                        <!-- <BLink href="javascript: void(0);" v-for="(task, index) of task.user_fullnames" :key="index"
-                          class="avatar-group-item" data-bs-toggle="tooltip" v-b-tooltip.hover title="Frank">
-                          <span> {{  task.name}}</span>
-                        </BLink> -->
-                        <div v-for="(task, index) of task.user_fullnames" :key="index" class="avatar-group-item" >
+                        <div v-for="(task, index) of task.user_fullnames" :key="index" class="avatar-group-item">
                           <BLink href="javascript: void(0);" :data-bs-toggle="task.name" v-b-tooltip.hover
                             :title="task.name">
                             <div class="mr-1">
@@ -685,32 +656,33 @@ export default {
           </BCol>
           <BCol lg="12">
             <div>
-                <label for="tasksTitle-field" class="form-label">Desc</label>
-                <textarea rows="3" type="text" id="tasksTitle" class="form-control" placeholder="Description of task"
-                  v-model="event.desc" :class="{ 'is-invalid': submitted && !event.desc }"></textarea>
+              <label for="tasksTitle-field" class="form-label">Desc</label>
+              <textarea rows="3" type="text" id="tasksTitle" class="form-control" placeholder="Description of task"
+                v-model="event.desc" :class="{ 'is-invalid': submitted && !event.desc }"></textarea>
               <div class="invalid-feedback">Please enter a Description.</div>
             </div>
           </BCol>
           <BCol lg="12">
             <label class="form-label">Assigned To</label>
             <simplebar data-simplebar style="height: 95px">
-                <ul class="list-unstyled vstack gap-2 mb-0">
-                    <li v-for="(data, index) of allUser" :key="index">
-                        <div class="form-check d-flex align-items-center">
-                            <input class="form-check-input me-3" type="checkbox" :value="data.id" :id="'checkbox_' + data.id" v-model="assignedTo" />
-                            <label class="form-check-label d-flex align-items-center" :for="'checkbox_' + data.id">
-                                <span class="flex-shrink-0">
-                                    <img src="@/assets/images/users/avatar-2.jpg" alt="" class="avatar-xxs rounded-circle" />
-                                </span>
-                                <span class="flex-grow-1 ms-2">{{ data.username }}</span>
-                            </label>
-                        </div>
-                    </li>
-                </ul>
+              <ul class="list-unstyled vstack gap-2 mb-0">
+                <li v-for="(data, index) of allUser" :key="index">
+                  <div class="form-check d-flex align-items-center">
+                    <input class="form-check-input me-3" type="checkbox" :value="data.id" :id="'checkbox_' + data.id"
+                      v-model="assignedTo" />
+                    <label class="form-check-label d-flex align-items-center" :for="'checkbox_' + data.id">
+                      <span class="flex-shrink-0">
+                        <img src="@/assets/images/users/avatar-2.jpg" alt="" class="avatar-xxs rounded-circle" />
+                      </span>
+                      <span class="flex-grow-1 ms-2">{{ data.username }}</span>
+                    </label>
+                  </div>
+                </li>
+              </ul>
             </simplebar>
             <div class="invalid-feedback">Please select an Assignee.</div>
-        </BCol>
-        
+          </BCol>
+
           <BCol lg="6">
             <label for="duedate-field" class="form-label">Deadline Date</label>
             <flat-pickr placeholder="Select date" :config="timeConfig" class="form-control flatpickr-input" id="date"
@@ -720,21 +692,21 @@ export default {
           <BCol lg="6">
             <label for="ticket-status" class="form-label">Status</label>
             <Multiselect id="statusid" :close-on-select="true" :searchable="true" :create-option="true"
-             :options="eventStatusOptions" v-model="event.status" :class="{ 'is-invalid': submitted && !event.status }" />
+              :options="eventStatusOptions" v-model="event.status"
+              :class="{ 'is-invalid': submitted && !event.status }" />
             <div class="invalid-feedback">Please select a status.</div>
           </BCol>
           <BCol lg="6">
             <label for="priority-field" class="form-label">Priority</label>
-            <Multiselect id="priority" :close-on-select="true" :searchable="true" :create-option="true" 
-            :options="eventPriorityOptions"
-             v-model="event.priority" :class="{ 'is-invalid': submitted && !event.priority }" />
+            <Multiselect id="priority" :close-on-select="true" :searchable="true" :create-option="true"
+              :options="eventPriorityOptions" v-model="event.priority"
+              :class="{ 'is-invalid': submitted && !event.priority }" />
             <div class="invalid-feedback">Please select a priority.</div>
           </BCol>
           <BCol lg="6">
             <label for="priority-field" class="form-label">Type of Task</label>
-            <Multiselect id="Type" :close-on-select="true" :searchable="true" :create-option="true" 
-            :options="eventTypeOptions"
-             v-model="event.type" :class="{ 'is-invalid': submitted && !event.type }" />
+            <Multiselect id="Type" :close-on-select="true" :searchable="true" :create-option="true"
+              :options="eventTypeOptions" v-model="event.type" :class="{ 'is-invalid': submitted && !event.type }" />
             <div class="invalid-feedback">Please select a priority.</div>
           </BCol>
         </BRow>
