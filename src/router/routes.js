@@ -67,6 +67,16 @@ export default [
   },
   //New Page 
   {
+    path: "/assign-to-me",
+    name: "Assignee to me ",
+    meta: {
+      title: "Assignee to me",
+      authRequired: true,
+    },
+    component: () => import("../views/assignee-to-me/index.vue"),
+  },
+  ///
+  {
     path: "/staffs",
     name: "Staff",
     meta: {
@@ -76,7 +86,7 @@ export default [
     component: () => import("../views/staffs/index.vue"),
   },
 
-  ///
+
   /////////////////////////
   {
     path: "/member",

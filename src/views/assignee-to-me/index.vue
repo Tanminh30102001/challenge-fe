@@ -1,12 +1,9 @@
 <script>
-import {
-  CountTo
-} from "vue3-count-to";
 import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
 import flatPickr from "vue-flatpickr-component";
 import "flatpickr/dist/flatpickr.css";
-
+import config from "../../../globalConfig";
 import Layout from "@/layouts/main.vue";
 import PageHeader from "@/components/page-header";
 import Swal from "sweetalert2";
@@ -15,7 +12,6 @@ import animationData from "@/components/widgets/msoeawqm.json";
 import animationData1 from "@/components/widgets/gsqxdxog.json";
 import Lottie from "@/components/widgets/lottie.vue";
 import simplebar from "simplebar-vue";
-import config from "../../../../globalConfig";
 export default {
   data() {
     return {
@@ -82,12 +78,13 @@ export default {
         project: "",
         assigned_to: [],
         status: "",
+        user_id:null,
       },
       //
     };
   },
   components: {
-    CountTo,
+    
     Layout,
     PageHeader,
     lottie: Lottie,
@@ -130,8 +127,7 @@ export default {
         });
       } else if (this.filtervalue !== null) {
         return this.displayedPosts.filter((data) => {
-          // if (data.status === this.filtervalue || this.filtervalue == "All") {
-            if ( this.filtervalue || this.filtervalue == "All") {
+          if (data.status === this.filtervalue || this.filtervalue == "All") {
             return data;
           } else {
             return null;
@@ -154,6 +150,8 @@ export default {
     this.fetchType();
     this.fetchPriority()
     this.fetchUser()
+   
+    
 
   },
   filters: {
@@ -223,9 +221,11 @@ export default {
     },
     async fetchTasks() {
       try {
-        const response = await axios.get(config.API_URL + "/allTask");
+        this.user_id=JSON.parse(localStorage.getItem('user')).id;
+        console.log(this.user_id);
+        const response = await axios.get( `${config.API_URL}/getTaskByUser/${this.user_id}`);
         this.allTask = response.data;
-
+        console.log(response)
       } catch (error) {
         console.error(error);
       }
@@ -250,6 +250,8 @@ export default {
       if (this.dataEdit) {
         this.submitted = true;
         this.event.created_id=JSON.parse(localStorage.getItem('user')).id;
+        
+        
         if (
           this.submitted &&
           this.event.name &&
@@ -298,8 +300,9 @@ export default {
           
           axios
             .post(config.API_URL + "/addTask", this.event)
-            .then(() => {
-              this.fetchTasks()
+            .then((response) => {
+              console.log(response.data)
+              this.allTask.unshift(response.data.data);
             })
             .catch((er) => {
               console.log(er);
@@ -415,6 +418,8 @@ export default {
     },
   },
   mounted() {
+    
+    console.log(this.allPriority,'this.allPriority')
     var checkAll = document.getElementById("checkAll");
     if (checkAll) {
       checkAll.onclick = function () {
@@ -463,116 +468,6 @@ export default {
 <template>
   <Layout>
     <PageHeader title="List View" pageTitle="Tasks" />
-    <BRow>
-      <BCol xxl="3" sm="6">
-        <BCard no-body class="card-animate">
-          <BCardBody>
-            <div class="d-flex justify-content-between">
-              <div>
-                <p class="fw-medium text-muted mb-0">Total Tasks</p>
-                <h2 class="mt-4 ff-secondary fw-semibold">
-                  <count-to :startVal="0" :endVal="234" :duration="5000"></count-to>k
-                </h2>
-                <p class="mb-0 text-muted">
-                  <BBadge class="bg-light text-success mb-0">
-                    <i class="ri-arrow-up-line align-middle"></i> 17.32 %
-                  </BBadge>
-                  vs. previous month
-                </p>
-              </div>
-              <div>
-                <div class="avatar-sm flex-shrink-0">
-                  <span class="avatar-title bg-info-subtle text-info rounded-circle fs-4">
-                    <i class="ri-ticket-2-line"></i>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </BCardBody>
-        </BCard>
-      </BCol>
-      <BCol xxl="3" sm="6">
-        <BCard no-body class="card-animate">
-          <BCardBody>
-            <div class="d-flex justify-content-between">
-              <div>
-                <p class="fw-medium text-muted mb-0">Pending Tasks </p>
-                <h2 class="mt-4 ff-secondary fw-semibold">
-                  <count-to :startVal="0" :endVal="64" :duration="5000"></count-to>k
-                </h2>
-                <p class="mb-0 text-muted">
-                  <BBadge class="bg-light text-danger mb-0">
-                    <i class="ri-arrow-down-line align-middle"></i> 0.87 %
-                  </BBadge>
-                  vs. previous month
-                </p>
-              </div>
-              <div>
-                <div class="avatar-sm flex-shrink-0">
-                  <span class="avatar-title bg-warning-subtle text-warning rounded-circle fs-4">
-                    <i class="mdi mdi-timer-sand"></i>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </BCardBody>
-        </BCard>
-      </BCol>
-      <BCol xxl="3" sm="6">
-        <BCard no-body class="card-animate">
-          <BCardBody>
-            <div class="d-flex justify-content-between">
-              <div>
-                <p class="fw-medium text-muted mb-0">Completed Tasks</p>
-                <h2 class="mt-4 ff-secondary fw-semibold">
-                  <count-to :startVal="0" :endVal="116" :duration="5000"></count-to>K
-                </h2>
-                <p class="mb-0 text-muted">
-                  <BBadge class="bg-light text-danger mb-0">
-                    <i class="ri-arrow-down-line align-middle"></i> 2.52 %
-                  </BBadge>
-                  vs. previous month
-                </p>
-              </div>
-              <div>
-                <div class="avatar-sm flex-shrink-0">
-                  <span class="avatar-title bg-success-subtle text-success rounded-circle fs-4">
-                    <i class="ri-checkbox-circle-line"></i>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </BCardBody>
-        </BCard>
-      </BCol>
-      <BCol xxl="3" sm="6">
-        <BCard no-body class="card-animate">
-          <BCardBody>
-            <div class="d-flex justify-content-between">
-              <div>
-                <p class="fw-medium text-muted mb-0">Deleted Tasks</p>
-                <h2 class="mt-4 ff-secondary fw-semibold">
-                  <count-to :startVal="0" :endVal="14.84" :duration="5000" :decimals="2"></count-to>%
-                </h2>
-                <p class="mb-0 text-muted">
-                  <BBadge class="bg-light text-success mb-0">
-                    <i class="ri-arrow-up-line align-middle"></i> 0.63 %
-                  </BBadge>
-                  vs. previous month
-                </p>
-              </div>
-              <div>
-                <div class="avatar-sm flex-shrink-0">
-                  <span class="avatar-title bg-danger-subtle text-danger rounded-circle fs-4">
-                    <i class="ri-delete-bin-line"></i>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </BCardBody>
-        </BCard>
-      </BCol>
-    </BRow>
 
     <BRow>
       <BCol lg="12">
@@ -598,7 +493,7 @@ export default {
                 <BCol xxl="5" sm="12">
                   <div class="search-box">
                     <input type="text" class="form-control search bg-light border-light"
-                      placeholder="Search for tasks or something..." />
+                      placeholder="Search for tasks or something..." v-model="searchQuery" />
                     <i class="ri-search-line search-icon"></i>
                   </div>
                 </BCol>
@@ -621,7 +516,7 @@ export default {
                   </div>
                 </BCol>
                 <BCol xxl="1" sm="4">
-                  <BButton type="button" variant="primary" class="w-100">
+                  <BButton type="button" variant="primary" class="w-100" @click="SearchData">
                     <i class="ri-equalizer-fill me-1 align-bottom"></i>
                     Filters
                   </BButton>
@@ -692,12 +587,12 @@ export default {
                             <li class="list-inline-item" @click="editDetails(task)">
                               <BLink href="#"><i class="ri-pencil-fill align-bottom me-2 text-muted"></i></BLink>
                             </li>
-                            <!-- <li class="list-inline-item">
+                            <li class="list-inline-item">
                               <BLink class="remove-item-btn" href="javascript:void(0);"
                                 @click="deleteModalToggle(task)">
                                 <i class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>
                               </BLink>
-                            </li> -->
+                            </li>
                           </ul>
                         </div>
                       </div>
@@ -705,7 +600,10 @@ export default {
                     <td class="client_name">{{ task.created_user }}</td>
                     <td class="assignedto">
                       <div class="flex-grow-1 ms-2">
-
+                        <!-- <BLink href="javascript: void(0);" v-for="(task, index) of task.user_fullnames" :key="index"
+                          class="avatar-group-item" data-bs-toggle="tooltip" v-b-tooltip.hover title="Frank">
+                          <span> {{  task.name}}</span>
+                        </BLink> -->
                         <div v-for="(task, index) of task.user_fullnames" :key="index" class="avatar-group-item" >
                           <BLink href="javascript: void(0);" :data-bs-toggle="task.name" v-b-tooltip.hover
                             :title="task.name">

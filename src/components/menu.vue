@@ -245,7 +245,6 @@ this.getRole()
                 </router-link>
             </span>
           </BLink>
-
           <BLink v-if="this.role===2" class="nav-link menu-link" href="#sidebarDashboards" role="button"
             aria-expanded="false" aria-controls="sidebarDashboards">
             <router-link to="/staffs" class="nav-link px-0 py-0" >
@@ -257,6 +256,16 @@ this.getRole()
                 </router-link>
             </span>
           </BLink>
+          <BLink class="nav-link menu-link" href="#sidebarDashboards" role="button"
+          aria-expanded="false" aria-controls="sidebarDashboards">
+          <router-link to="/assign-to-me" class="nav-link px-0 py-0" >
+          </router-link>
+          <span data-key="t-dashboards"> 
+            <router-link to="/assign-to-me" class="nav-link" >
+              {{ $t("Assignee to me") }}
+              </router-link>
+          </span>
+        </BLink>
           <div class="collapse menu-dropdown d-none" id="sidebarDashboards">
             <ul class="nav nav-sm flex-column">
               <li class="nav-item">
@@ -297,7 +306,7 @@ this.getRole()
             </ul>
           </div>
         </li>
-<div  >
+<div class="d-none" >
         <li class="nav-item">
           <BLink class="nav-link menu-link" href="#sidebarApps" data-bs-toggle="collapse" role="button"
             aria-expanded="false" aria-controls="sidebarApps">
