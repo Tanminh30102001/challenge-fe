@@ -104,8 +104,6 @@ export default {
       console.log(result.status)
       if(result.status == 200){
         this.$router.push('/login');
-        localStorage.setItem('alertSignUp',result.data.message)
-        return this.registerSuccess = result.data.message;
       }
       }catch(e){
         this.isRegisterError = true;

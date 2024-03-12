@@ -42,11 +42,11 @@ export default {
       }
     },
   },
-  // watch: {
-  //   candidatelist() {
-  //     this.setPages();
-  //   },
-  // },
+  watch: {
+    candidatelist() {
+      this.setPages();
+    },
+  },
   created() {
     this.setPages();
     this.getAllUser();
@@ -92,6 +92,7 @@ export default {
           approve:1
         };
         const response = await axios.post(config.API_URL + "/register", newUser);
+        this.getAllUser()
         console.log('User added successfully:', response.status);
         this.modalAddUser=false;
       } catch (error) {
@@ -232,7 +233,7 @@ export default {
               href="#"
               class="page-link"
               id="page-prev"
-              :disabled="page <= 1"
+              
               @click="page--"
               >Previous</BLink
             >
