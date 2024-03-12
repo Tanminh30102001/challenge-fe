@@ -147,12 +147,14 @@ export default {
     },
   },
   created() {
+   
     this.setPages();
     this.fetchTasks();
     this.fetchStatus();
     this.fetchType();
     this.fetchPriority();
     this.fetchUser();
+    
   },
   filters: {
     trimWords(value) {
@@ -207,12 +209,12 @@ export default {
     async fetchTasks() {
       try {
         this.user_id = JSON.parse(localStorage.getItem("user")).id;
-        console.log(this.user_id);
+        
         const response = await axios.get(
           `${config.API_URL}/getTaskByUser/${this.user_id}`
         );
         this.allTask = response.data;
-        console.log(this.allTask);
+       
       } catch (error) {
         console.error(error);
       }
@@ -223,11 +225,11 @@ export default {
           type_id:this.type,
           priority:this.priority
         }
-        console.log(filterdata)
+       
         axios.post(`${config.API_URL}/fillterWithUser/${this.user_id}`, filterdata)
   .then(response => {
     this.allTask=response.data
-    console.log(this.allTask);
+   
   })
   .catch(error => {
     // Xử lý lỗi nếu có
@@ -282,7 +284,7 @@ export default {
       } else {
         this.submitted = true;
         this.event.created_id = JSON.parse(localStorage.getItem("user")).id;
-        console.log(this.event.assigned_to, "sss");
+        
         if (
           this.submitted &&
           this.event.name &&
@@ -301,7 +303,7 @@ export default {
           axios
             .post(config.API_URL + "/addTask", this.event)
             .then((response) => {
-              console.log(response.data);
+              
               this.allTask.unshift(response.data.data);
             })
             .catch((er) => {
@@ -326,7 +328,7 @@ export default {
       this.dataEdit = true;
       this.taskListModal = true;
       this.event = { ...data };
-      console.log(this.event);
+     
       this.submitted = false;
     },
 
@@ -360,7 +362,21 @@ export default {
       this.filterdate = this.filterdate1;
       this.filtervalue = this.filtervalue1;
     },
+    searchTasks() {
+      const searchData = {
+    search: this.search
+  };
 
+      axios
+        .post(config.API_URL + "/search", searchData)
+        .then((response) => {
+          this.allTask = response.data;
+          
+        })
+        .catch((er) => {
+          console.log(er);
+        });
+    },
     deleteMultiple() {
       let ids_array = [];
       var items = document.getElementsByName("chk_child");
@@ -400,8 +416,8 @@ export default {
         });
       }
     },
-
-    setPages() {
+   
+     setPages() {
       let numberOfPages = Math.ceil(this.allTask.length / this.perPage);
       this.pages = [];
       for (let index = 1; index <= numberOfPages; index++) {
@@ -495,6 +511,7 @@ export default {
                       class="form-control search bg-light border-light"
                       placeholder="Search for task name or task ID"
                       v-model="search"
+                      @input="searchTasks"
                     />
                     <i class="ri-search-line search-icon"></i>
                   </div>

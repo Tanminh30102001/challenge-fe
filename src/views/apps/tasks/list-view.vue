@@ -1,7 +1,5 @@
 <script>
-import {
-  CountTo
-} from "vue3-count-to";
+import { CountTo } from "vue3-count-to";
 import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
 import flatPickr from "vue-flatpickr-component";
@@ -19,7 +17,6 @@ import config from "../../../../globalConfig";
 export default {
   data() {
     return {
-     
       taskListModal: false,
       date3: null,
       rangeDateconfig: {
@@ -50,10 +47,10 @@ export default {
       allPriority: [],
       allType: [],
       allUser: [],
-      eventPriorityOptions:[],
-      eventStatusOptions:[],
-      eventTypeOptions:[],
-      assignedTo:[],
+      eventPriorityOptions: [],
+      eventStatusOptions: [],
+      eventTypeOptions: [],
+      assignedTo: [],
       searchQuery: null,
       page: 1,
       perPage: 8,
@@ -68,20 +65,29 @@ export default {
       //
       submitted: false,
       //
-      search: "",
+      search:" ",
       type: null,
       priority: null,
       status: null,
       datefilter: null,
       //
+      //static
+      totalTask:0,
+      totalPending:0,
+      totalInprogess:0,
+      totalDone:0,
+      totalNotStart:0,
+      overDeadline:0,
+      ////
+
       dataEdit: false,
       deleteModal: false,
       event: {
         id: "",
         taskId: "",
         name: "",
-        type:"",
-        desc:"",
+        type: "",
+        desc: "",
         created_id: "",
         deadline: "",
         priority: "",
@@ -137,7 +143,7 @@ export default {
       } else if (this.filtervalue !== null) {
         return this.displayedPosts.filter((data) => {
           // if (data.status === this.filtervalue || this.filtervalue == "All") {
-            if ( this.filtervalue || this.filtervalue == "All") {
+          if (this.filtervalue || this.filtervalue == "All") {
             return data;
           } else {
             return null;
@@ -154,13 +160,13 @@ export default {
     },
   },
   created() {
+    this.getStatic()
     this.setPages();
     this.fetchTasks();
-    this.fetchStatus()
+    this.fetchStatus();
     this.fetchType();
-    this.fetchPriority()
-    this.fetchUser()
-
+    this.fetchPriority();
+    this.fetchUser();
   },
   filters: {
     trimWords(value) {
@@ -204,7 +210,10 @@ export default {
       try {
         const response = await axios.get(config.API_URL + "/getStatus");
         this.allStatus = response.data;
-        this.eventStatusOptions = this.allStatus.map(priority => ({ value: priority.id, label: priority.name }));
+        this.eventStatusOptions = this.allStatus.map((priority) => ({
+          value: priority.id,
+          label: priority.name,
+        }));
       } catch (error) {
         console.error(error);
       }
@@ -213,7 +222,10 @@ export default {
       try {
         const response = await axios.get(config.API_URL + "/getPriority");
         this.allPriority = response.data;
-        this.eventPriorityOptions = this.allPriority.map(priority => ({ value: priority.id, label: priority.name }))
+        this.eventPriorityOptions = this.allPriority.map((priority) => ({
+          value: priority.id,
+          label: priority.name,
+        }));
       } catch (error) {
         console.error(error);
       }
@@ -222,7 +234,10 @@ export default {
       try {
         const response = await axios.get(config.API_URL + "/getType");
         this.allType = response.data;
-        this.eventTypeOptions = this.allType.map(priority => ({ value: priority.id, label: priority.name }));
+        this.eventTypeOptions = this.allType.map((priority) => ({
+          value: priority.id,
+          label: priority.name,
+        }));
       } catch (error) {
         console.error(error);
       }
@@ -231,28 +246,43 @@ export default {
       try {
         const response = await axios.get(config.API_URL + "/allTask");
         this.allTask = response.data;
-        console.log(this.allTask)
+        console.log(this.allTask);
       } catch (error) {
         console.error(error);
       }
     },
-    filterData(){
-        const filterdata={
-          date:this.datefilter,
-          status_id:this.status,
-          type_id:this.type,
-          priority:this.priority
-        }
-        console.log(filterdata)
-        axios.post(`${config.API_URL}/filterAllTask`, filterdata)
-  .then(response => {
-    this.allTask=response.data
-    console.log(this.allTask);
-  })
-  .catch(error => {
-    // Xử lý lỗi nếu có
-    console.error('Error:', error);
-  })
+    filterData() {
+      const filterdata = {
+        date: this.datefilter,
+        status_id: this.status,
+        type_id: this.type,
+        priority: this.priority,
+      };
+      console.log(filterdata);
+      axios
+        .post(`${config.API_URL}/filterAllTask`, filterdata)
+        .then((response) => {
+          this.allTask = response.data;
+          console.log(this.allTask);
+        })
+        .catch((error) => {
+          // Xử lý lỗi nếu có
+          console.error("Error:", error);
+        });
+    },
+    async getStatic(){
+      try {
+        const response = await axios.get(config.API_URL + "/staticTask");
+       console.log('static',response.data)
+       this.totalTask=response.data.total_tasks
+       this.totalNotStart=response.data.total_tasks_with_status_1
+       this.totalInprogess=response.data.total_tasks_with_status_2
+       this.totalPending=response.data.total_tasks_with_status_3
+       this.totalDone=response.data.total_tasks_with_status_4
+       this.overDeadline=response.data.overdue_tasks
+      } catch (error) {
+        console.error(error);
+      }
     },
     formatDateTo(dateString) {
       // Tạo một đối tượng Date từ chuỗi ngày
@@ -260,8 +290,8 @@ export default {
 
       // Lấy các thành phần ngày, tháng, năm
       const year = date.getFullYear();
-      const month = ('0' + (date.getMonth() + 1)).slice(-2); // Thêm số 0 phía trước nếu cần
-      const day = ('0' + date.getDate()).slice(-2); // Thêm số 0 phía trước nếu cần
+      const month = ("0" + (date.getMonth() + 1)).slice(-2); // Thêm số 0 phía trước nếu cần
+      const day = ("0" + date.getDate()).slice(-2); // Thêm số 0 phía trước nếu cần
 
       // Tạo chuỗi định dạng ngày tháng năm
       const formattedDate = `${year}-${month}-${day}`;
@@ -269,28 +299,25 @@ export default {
       return formattedDate;
     },
     handleSubmit() {
-      this.event.assigned_to=this.assignedTo
-      this.event.deadline=this.formatDateTo(this.event.deadline);
+      this.event.assigned_to = this.assignedTo;
+      this.event.deadline = this.formatDateTo(this.event.deadline);
       if (this.dataEdit) {
         this.submitted = true;
-        this.event.created_id=JSON.parse(localStorage.getItem('user')).id;
+        this.event.created_id = JSON.parse(localStorage.getItem("user")).id;
         if (
           this.submitted &&
           this.event.name &&
-          this.event.desc&&
+          this.event.desc &&
           this.event.created_id &&
           this.event.deadline &&
           this.event.status &&
-          this.event.priority&&
-          this.event.type
-          &&   this.event.assigned_to.length > 0
+          this.event.priority &&
+          this.event.type &&
+          this.event.assigned_to.length > 0
         ) {
           this.taskListModal = false;
           axios
-            .patch(
-              `${config.API_URL}/updateTask/${this.event.id}`,
-              this.event
-            )
+            .patch(`${config.API_URL}/updateTask/${this.event.id}`, this.event)
             .then((response) => {
               const data = response.data.data;
               this.allTask = this.allTask.map((item) =>
@@ -303,36 +330,48 @@ export default {
         }
       } else {
         this.submitted = true;
-        this.event.created_id=JSON.parse(localStorage.getItem('user')).id;
-        console.log( this.event.assigned_to,'sss')
+        this.event.created_id = JSON.parse(localStorage.getItem("user")).id;
+        console.log(this.event.assigned_to, "sss");
         if (
           this.submitted &&
           this.event.name &&
-          this.event.desc&&
+          this.event.desc &&
           this.event.created_id &&
           this.event.deadline &&
           this.event.status &&
-          this.event.priority&&
-          this.event.type
-          &&   this.event.assigned_to.length > 0
+          this.event.priority &&
+          this.event.type &&
+          this.event.assigned_to.length > 0
         ) {
-          console.log('this.event',this.event)
+          console.log("this.event", this.event);
           // this.event.assigned_to = this.assignedTo;
           this.taskListModal = false;
-          
           axios
             .post(config.API_URL + "/addTask", this.event)
             .then(() => {
-              this.fetchTasks()
+              this.fetchTasks();
             })
             .catch((er) => {
               console.log(er);
             });
         }
-      
       }
     },
-
+    searchTasks() {
+      const searchData = {
+    search: this.search
+  };
+      console.log(this.search);
+      axios
+        .post(config.API_URL + "/search", searchData)
+        .then((response) => {
+          this.allTask = response.data;
+          console.log(this.allTask);
+        })
+        .catch((er) => {
+          console.log(er);
+        });
+    },
     onSort(column) {
       this.direction = this.direction === "asc" ? "desc" : "asc";
       const sortedArray = [...this.allTask];
@@ -348,7 +387,7 @@ export default {
       this.dataEdit = true;
       this.taskListModal = true;
       this.event = { ...data };
-      console.log(this.event)
+      console.log(this.event);
       this.submitted = false;
     },
 
@@ -486,7 +525,7 @@ export default {
 
 <template>
   <Layout>
-    <PageHeader title="List View" pageTitle="Tasks" />
+    <PageHeader title="Dash Board" pageTitle="Tasks" />
     <BRow>
       <BCol xxl="3" sm="6">
         <BCard no-body class="card-animate">
@@ -495,14 +534,14 @@ export default {
               <div>
                 <p class="fw-medium text-muted mb-0">Total Tasks</p>
                 <h2 class="mt-4 ff-secondary fw-semibold">
-                  <count-to :startVal="0" :endVal="234" :duration="5000"></count-to>k
+                  <count-to :startVal="0" :endVal="totalTask" :duration="5000"></count-to>
                 </h2>
-                <p class="mb-0 text-muted">
+                <!-- <p class="mb-0 text-muted">
                   <BBadge class="bg-light text-success mb-0">
                     <i class="ri-arrow-up-line align-middle"></i> 17.32 %
                   </BBadge>
                   vs. previous month
-                </p>
+                </p> -->
               </div>
               <div>
                 <div class="avatar-sm flex-shrink-0">
@@ -520,20 +559,22 @@ export default {
           <BCardBody>
             <div class="d-flex justify-content-between">
               <div>
-                <p class="fw-medium text-muted mb-0">Pending Tasks </p>
+                <p class="fw-medium text-muted mb-0">Pending Tasks</p>
                 <h2 class="mt-4 ff-secondary fw-semibold">
-                  <count-to :startVal="0" :endVal="64" :duration="5000"></count-to>k
+                  <count-to :startVal="0" :endVal="totalPending" :duration="5000"></count-to>
                 </h2>
-                <p class="mb-0 text-muted">
+                <!-- <p class="mb-0 text-muted">
                   <BBadge class="bg-light text-danger mb-0">
                     <i class="ri-arrow-down-line align-middle"></i> 0.87 %
                   </BBadge>
                   vs. previous month
-                </p>
+                </p> -->
               </div>
               <div>
                 <div class="avatar-sm flex-shrink-0">
-                  <span class="avatar-title bg-warning-subtle text-warning rounded-circle fs-4">
+                  <span
+                    class="avatar-title bg-warning-subtle text-warning rounded-circle fs-4"
+                  >
                     <i class="mdi mdi-timer-sand"></i>
                   </span>
                 </div>
@@ -547,21 +588,23 @@ export default {
           <BCardBody>
             <div class="d-flex justify-content-between">
               <div>
-                <p class="fw-medium text-muted mb-0">Completed Tasks</p>
+                <p class="fw-medium text-muted mb-0">Inprogress Tasks</p>
                 <h2 class="mt-4 ff-secondary fw-semibold">
-                  <count-to :startVal="0" :endVal="116" :duration="5000"></count-to>K
+                  <count-to :startVal="0" :endVal="totalInprogess" :duration="5000"></count-to>
                 </h2>
-                <p class="mb-0 text-muted">
+                <!-- <p class="mb-0 text-muted">
                   <BBadge class="bg-light text-danger mb-0">
                     <i class="ri-arrow-down-line align-middle"></i> 2.52 %
                   </BBadge>
                   vs. previous month
-                </p>
+                </p> -->
               </div>
               <div>
                 <div class="avatar-sm flex-shrink-0">
-                  <span class="avatar-title bg-success-subtle text-success rounded-circle fs-4">
-                    <i class="ri-checkbox-circle-line"></i>
+                  <span
+                    class="avatar-title bg-warning-subtle text-warning rounded-circle fs-4"
+                  >
+                    <i class=" las la-redo-alt"></i>
                   </span>
                 </div>
               </div>
@@ -574,21 +617,87 @@ export default {
           <BCardBody>
             <div class="d-flex justify-content-between">
               <div>
-                <p class="fw-medium text-muted mb-0">Deleted Tasks</p>
+                <p class="fw-medium text-muted mb-0">Not Starts Tasks</p>
                 <h2 class="mt-4 ff-secondary fw-semibold">
-                  <count-to :startVal="0" :endVal="14.84" :duration="5000" :decimals="2"></count-to>%
+                  <count-to :startVal="0" :endVal="totalNotStart" :duration="5000"></count-to>
                 </h2>
-                <p class="mb-0 text-muted">
+                <!-- <p class="mb-0 text-muted">
+                  <BBadge class="bg-light text-danger mb-0">
+                    <i class="ri-arrow-down-line align-middle"></i> 2.52 %
+                  </BBadge>
+                  vs. previous month
+                </p> -->
+              </div>
+              <div>
+                <div class="avatar-sm flex-shrink-0">
+                  <span
+                    class="avatar-title bg-danger-subtle text-danger rounded-circle fs-4"
+                  >
+                    <i class="ri-close-fill"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </BCardBody>
+        </BCard>
+      </BCol>
+      <BCol xxl="3" sm="6">
+        <BCard no-body class="card-animate">
+          <BCardBody>
+            <div class="d-flex justify-content-between">
+              <div>
+                <p class="fw-medium text-muted mb-0">Done Tasks</p>
+                <h2 class="mt-4 ff-secondary fw-semibold">
+                  <count-to
+                    :startVal="0"
+                    :endVal="totalDone"
+                    :duration="5000"
+                    :decimals="2"
+                  ></count-to
+                  >
+                </h2>
+                <!-- <p class="mb-0 text-muted">
                   <BBadge class="bg-light text-success mb-0">
                     <i class="ri-arrow-up-line align-middle"></i> 0.63 %
                   </BBadge>
                   vs. previous month
-                </p>
+                </p> -->
               </div>
               <div>
                 <div class="avatar-sm flex-shrink-0">
-                  <span class="avatar-title bg-danger-subtle text-danger rounded-circle fs-4">
-                    <i class="ri-delete-bin-line"></i>
+                  <span
+                    class="avatar-title bg-success-subtle text-success rounded-circle fs-4"
+                  >
+                    <i class="ri-check-double-fill"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </BCardBody>
+        </BCard>
+      </BCol>
+      <BCol xxl="3" sm="6">
+        <BCard no-body class="card-animate">
+          <BCardBody>
+            <div class="d-flex justify-content-between">
+              <div>
+                <p class="fw-medium text-muted mb-0">Tasks over deadline</p>
+                <h2 class="mt-4 ff-secondary fw-semibold">
+                  <count-to :startVal="0" :endVal="overDeadline" :duration="5000"></count-to>
+                </h2>
+                <!-- <p class="mb-0 text-muted">
+                  <BBadge class="bg-light text-danger mb-0">
+                    <i class="ri-arrow-down-line align-middle"></i> 2.52 %
+                  </BBadge>
+                  vs. previous month
+                </p> -->
+              </div>
+              <div>
+                <div class="avatar-sm flex-shrink-0">
+                  <span
+                    class="avatar-title bg-danger-subtle text-danger rounded-circle fs-4"
+                  >
+                    <i class="las la-exclamation"></i>
                   </span>
                 </div>
               </div>
@@ -606,7 +715,12 @@ export default {
               <h5 class="card-title mb-0 flex-grow-1">All Tasks</h5>
               <div class="flex-shrink-0">
                 <div class="d-flex flex-wrap gap-2">
-                  <BButton variant="soft-danger" class="me-1" id="remove-actions" @click="deleteMultiple">
+                  <BButton
+                    variant="soft-danger"
+                    class="me-1"
+                    id="remove-actions"
+                    @click="deleteMultiple"
+                  >
                     <i class="ri-delete-bin-2-line"></i>
                   </BButton>
                   <BButton variant="danger" class="add-btn" @click="toggleModal">
@@ -626,6 +740,7 @@ export default {
                       class="form-control search bg-light border-light"
                       placeholder="Search for task name or task ID"
                       v-model="search"
+                      @input="searchTasks"
                     />
                     <i class="ri-search-line search-icon"></i>
                   </div>
@@ -689,40 +804,28 @@ export default {
               <table class="table align-middle table-nowrap mb-0" id="tasksTable">
                 <thead class="table-light text-muted">
                   <tr>
-
-                    <th >ID</th>
-                    <th>
-                      Type
-                    </th>
-                    <th>
-                      Name
-                    </th>
-                    <th>
-                      Created By
-                    </th>
-                    <th >
-                      Assigned To
-                    </th>
-                    <th >
-                      Deadline Date
-                    </th>
-                    <th >
-                      Status
-                    </th>
-                    <th >
-                      Priority
-                    </th>
+                    <th>ID</th>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Created By</th>
+                    <th>Assigned To</th>
+                    <th>Deadline Date</th>
+                    <th>Status</th>
+                    <th>Priority</th>
                   </tr>
                 </thead>
                 <tbody class="list form-check-all">
                   <tr v-for="(task, index) of resultQuery" :key="index">
-                  
                     <td class="id">
-                      <router-link to="/apps/tasks-details" class="fw-medium link-primary">{{ task.task_code }}
+                      <router-link to="/apps/tasks-details" class="fw-medium link-primary"
+                        >{{ task.task_code }}
                       </router-link>
                     </td>
                     <td class="project_name">
-                      <router-link to="/apps/projects-overview" class="fw-medium link-primary">{{ task.type_task }}
+                      <router-link
+                        to="/apps/projects-overview"
+                        class="fw-medium link-primary"
+                        >{{ task.type_task }}
                       </router-link>
                     </td>
                     <td>
@@ -733,11 +836,16 @@ export default {
                         <div class="flex-shrink-0 ms-4">
                           <ul class="list-inline tasks-list-menu mb-0">
                             <li class="list-inline-item">
-                              <router-link to="/apps/tasks-details"><i
-                                  class="ri-eye-fill align-bottom me-2 text-muted"></i></router-link>
+                              <router-link to="/apps/tasks-details"
+                                ><i class="ri-eye-fill align-bottom me-2 text-muted"></i
+                              ></router-link>
                             </li>
                             <li class="list-inline-item" @click="editDetails(task)">
-                              <BLink href="#"><i class="ri-pencil-fill align-bottom me-2 text-muted"></i></BLink>
+                              <BLink href="#"
+                                ><i
+                                  class="ri-pencil-fill align-bottom me-2 text-muted"
+                                ></i
+                              ></BLink>
                             </li>
                             <!-- <li class="list-inline-item">
                               <BLink class="remove-item-btn" href="javascript:void(0);"
@@ -752,10 +860,17 @@ export default {
                     <td class="client_name">{{ task.created_user }}</td>
                     <td class="assignedto">
                       <div class="flex-grow-1 ms-2">
-
-                        <div v-for="(task, index) of task.user_fullnames" :key="index" class="avatar-group-item" >
-                          <BLink href="javascript: void(0);" :data-bs-toggle="task.name" v-b-tooltip.hover
-                            :title="task.name">
+                        <div
+                          v-for="(task, index) of task.user_fullnames"
+                          :key="index"
+                          class="avatar-group-item"
+                        >
+                          <BLink
+                            href="javascript: void(0);"
+                            :data-bs-toggle="task.name"
+                            v-b-tooltip.hover
+                            :title="task.name"
+                          >
                             <div class="mr-1">
                               <span style="margin-right: 12px">{{ task.name }}</span>
                             </div>
@@ -765,28 +880,40 @@ export default {
                     </td>
                     <td class="due_date">{{ task.deadline }}</td>
                     <td class="status">
-                      <span class="badge text-uppercase" :class="{
-                    'bg-secondary-subtle text-secondary':
-                      task.status_task == 'In Process',
-                    'bg-info-subtle text-info': task.status_task == 'Not Start',
-                    'bg-success-subtle text-success': task.status_task == 'Done ',
-                    'bg-warning-subtle text-warning': task.status_task == 'Pending',
-                  }">{{ task.status_task }}</span>
+                      <span
+                        class="badge text-uppercase"
+                        :class="{
+                          'bg-secondary-subtle text-secondary':
+                            task.status_task == 'In Process',
+                          'bg-info-subtle text-info': task.status_task == 'Not Start',
+                          'bg-success-subtle text-success': task.status_task == 'Done ',
+                          'bg-warning-subtle text-warning': task.status_task == 'Pending',
+                        }"
+                        >{{ task.status_task }}</span
+                      >
                     </td>
                     <td class="priority">
-                      <span class="badge text-uppercase" :class="{
-                    'bg-danger': task.priority_task == 'High',
-                    'bg-success': task.priority_task == 'Low',
-                    'bg-warning': task.priority_task == 'Medium',
-                  }">{{ task.priority_task }}</span>
+                      <span
+                        class="badge text-uppercase"
+                        :class="{
+                          'bg-danger': task.priority_task == 'High',
+                          'bg-success': task.priority_task == 'Low',
+                          'bg-warning': task.priority_task == 'Medium',
+                        }"
+                        >{{ task.priority_task }}</span
+                      >
                     </td>
                   </tr>
                 </tbody>
               </table>
               <div class="noresult" v-if="resultQuery.length < 1">
                 <div class="text-center">
-                  <lottie colors="primary:#121331,secondary:#08a88a" :options="defaultOptions" :height="75"
-                    :width="75" />
+                  <lottie
+                    colors="primary:#121331,secondary:#08a88a"
+                    :options="defaultOptions"
+                    :height="75"
+                    :width="75"
+                  />
                   <h5 class="mt-2">Sorry! No Result Found</h5>
                   <p class="text-muted mb-0">
                     We've searched more than 200k+ tasks We did not find any tasks for you
@@ -798,18 +925,32 @@ export default {
 
             <div class="d-flex justify-content-end" v-if="resultQuery.length >= 1">
               <div class="pagination-wrap hstack gap-2">
-                <BLink class="page-item pagination-prev" href="#" :disabled="page <= 1" @click="page--">
+                <BLink
+                  class="page-item pagination-prev"
+                  href="#"
+                  :disabled="page <= 1"
+                  @click="page--"
+                >
                   Previous
                 </BLink>
                 <ul class="pagination listjs-pagination mb-0">
-                  <li :class="{ active: pageNumber == page, disabled: pageNumber == '...' }"
-                    v-for="(pageNumber, index) in pages" :key="index" @click="page = pageNumber">
+                  <li
+                    :class="{ active: pageNumber == page, disabled: pageNumber == '...' }"
+                    v-for="(pageNumber, index) in pages"
+                    :key="index"
+                    @click="page = pageNumber"
+                  >
                     <BLink class="page" href="#" data-i="1" data-page="8">{{
-                    pageNumber
-                  }}</BLink>
+                      pageNumber
+                    }}</BLink>
                   </li>
                 </ul>
-                <BLink class="page-item pagination-next" href="#" :disabled="page >= pages.length" @click="page++">
+                <BLink
+                  class="page-item pagination-next"
+                  href="#"
+                  :disabled="page >= pages.length"
+                  @click="page++"
+                >
                   Next
                 </BLink>
               </div>
@@ -820,76 +961,140 @@ export default {
     </BRow>
 
     <!-- task list modal -->
-    <BModal v-model="taskListModal" id="showmodal" modal-class="zoomIn" hide-footer
-      header-class="p-3 bg-info-subtle taskModal" class="v-modal-custom" centered size="lg"
-      :title="dataEdit ? 'Edit Task' : 'Add Task'">
+    <BModal
+      v-model="taskListModal"
+      id="showmodal"
+      modal-class="zoomIn"
+      hide-footer
+      header-class="p-3 bg-info-subtle taskModal"
+      class="v-modal-custom"
+      centered
+      size="lg"
+      :title="dataEdit ? 'Edit Task' : 'Add Task'"
+    >
       <BFrom id="addform" class="tablelist-form" autocomplete="off">
         <BRow class="g-3">
           <input type="hidden" id="id" name="" />
           <BCol lg="12">
             <label for="projectName-field" class="form-label">Task Name</label>
-            <input type="text" id="projectName" class="form-control" placeholder="Task Name" v-model="event.name"
-              :class="{ 'is-invalid': submitted && !event.name }" />
+            <input
+              type="text"
+              id="projectName"
+              class="form-control"
+              placeholder="Task Name"
+              v-model="event.name"
+              :class="{ 'is-invalid': submitted && !event.name }"
+            />
             <div class="invalid-feedback">Please enter a Task Name.</div>
           </BCol>
           <BCol lg="12">
             <div>
-                <label for="tasksTitle-field" class="form-label">Desc</label>
-                <textarea rows="3" type="text" id="tasksTitle" class="form-control" placeholder="Description of task"
-                  v-model="event.desc" :class="{ 'is-invalid': submitted && !event.desc }"></textarea>
+              <label for="tasksTitle-field" class="form-label">Desc</label>
+              <textarea
+                rows="3"
+                type="text"
+                id="tasksTitle"
+                class="form-control"
+                placeholder="Description of task"
+                v-model="event.desc"
+                :class="{ 'is-invalid': submitted && !event.desc }"
+              ></textarea>
               <div class="invalid-feedback">Please enter a Description.</div>
             </div>
           </BCol>
           <BCol lg="12">
             <label class="form-label">Assigned To</label>
             <simplebar data-simplebar style="height: 95px">
-                <ul class="list-unstyled vstack gap-2 mb-0">
-                    <li v-for="(data, index) of allUser" :key="index">
-                        <div class="form-check d-flex align-items-center">
-                            <input class="form-check-input me-3" type="checkbox" :value="data.id" :id="'checkbox_' + data.id" v-model="assignedTo" />
-                            <label class="form-check-label d-flex align-items-center" :for="'checkbox_' + data.id">
-                                <span class="flex-shrink-0">
-                                    <img src="@/assets/images/users/avatar-2.jpg" alt="" class="avatar-xxs rounded-circle" />
-                                </span>
-                                <span class="flex-grow-1 ms-2">{{ data.username }}</span>
-                            </label>
-                        </div>
-                    </li>
-                </ul>
+              <ul class="list-unstyled vstack gap-2 mb-0">
+                <li v-for="(data, index) of allUser" :key="index">
+                  <div class="form-check d-flex align-items-center">
+                    <input
+                      class="form-check-input me-3"
+                      type="checkbox"
+                      :value="data.id"
+                      :id="'checkbox_' + data.id"
+                      v-model="assignedTo"
+                    />
+                    <label
+                      class="form-check-label d-flex align-items-center"
+                      :for="'checkbox_' + data.id"
+                    >
+                      <span class="flex-shrink-0">
+                        <img
+                          src="@/assets/images/users/avatar-2.jpg"
+                          alt=""
+                          class="avatar-xxs rounded-circle"
+                        />
+                      </span>
+                      <span class="flex-grow-1 ms-2">{{ data.username }}</span>
+                    </label>
+                  </div>
+                </li>
+              </ul>
             </simplebar>
             <div class="invalid-feedback">Please select an Assignee.</div>
-        </BCol>
-        
+          </BCol>
+
           <BCol lg="6">
             <label for="duedate-field" class="form-label">Deadline Date</label>
-            <flat-pickr placeholder="Select date" :config="timeConfig" class="form-control flatpickr-input" id="date"
-              v-model="event.deadline" :class="{ 'is-invalid': submitted && !event.deadline }"></flat-pickr>
+            <flat-pickr
+              placeholder="Select date"
+              :config="timeConfig"
+              class="form-control flatpickr-input"
+              id="date"
+              v-model="event.deadline"
+              :class="{ 'is-invalid': submitted && !event.deadline }"
+            ></flat-pickr>
             <div class="invalid-feedback">Please enter a date name.</div>
           </BCol>
           <BCol lg="6">
             <label for="ticket-status" class="form-label">Status</label>
-            <Multiselect id="statusid" :close-on-select="true" :searchable="true" :create-option="true"
-             :options="eventStatusOptions" v-model="event.status" :class="{ 'is-invalid': submitted && !event.status }" />
+            <Multiselect
+              id="statusid"
+              :close-on-select="true"
+              :searchable="true"
+              :create-option="true"
+              :options="eventStatusOptions"
+              v-model="event.status"
+              :class="{ 'is-invalid': submitted && !event.status }"
+            />
             <div class="invalid-feedback">Please select a status.</div>
           </BCol>
           <BCol lg="6">
             <label for="priority-field" class="form-label">Priority</label>
-            <Multiselect id="priority" :close-on-select="true" :searchable="true" :create-option="true" 
-            :options="eventPriorityOptions"
-             v-model="event.priority" :class="{ 'is-invalid': submitted && !event.priority }" />
+            <Multiselect
+              id="priority"
+              :close-on-select="true"
+              :searchable="true"
+              :create-option="true"
+              :options="eventPriorityOptions"
+              v-model="event.priority"
+              :class="{ 'is-invalid': submitted && !event.priority }"
+            />
             <div class="invalid-feedback">Please select a priority.</div>
           </BCol>
           <BCol lg="6">
             <label for="priority-field" class="form-label">Type of Task</label>
-            <Multiselect id="Type" :close-on-select="true" :searchable="true" :create-option="true" 
-            :options="eventTypeOptions"
-             v-model="event.type" :class="{ 'is-invalid': submitted && !event.type }" />
+            <Multiselect
+              id="Type"
+              :close-on-select="true"
+              :searchable="true"
+              :create-option="true"
+              :options="eventTypeOptions"
+              v-model="event.type"
+              :class="{ 'is-invalid': submitted && !event.type }"
+            />
             <div class="invalid-feedback">Please select a priority.</div>
           </BCol>
         </BRow>
 
         <div class="hstack gap-2 justify-content-end mt-3">
-          <BButton type="button" variant="light" @click="taskListModal = false" id="closemodal">
+          <BButton
+            type="button"
+            variant="light"
+            @click="taskListModal = false"
+            id="closemodal"
+          >
             Close
           </BButton>
           <BButton type="submit" variant="success" id="add-btn" @click="handleSubmit">
@@ -900,10 +1105,21 @@ export default {
     </BModal>
 
     <!-- delete modal -->
-    <BModal v-model="deleteModal" modal-class="zoomIn" hide-footer no-close-on-backdrop centered>
+    <BModal
+      v-model="deleteModal"
+      modal-class="zoomIn"
+      hide-footer
+      no-close-on-backdrop
+      centered
+    >
       <div class="mt-2 text-center">
-        <lottie class="avatar-xl" colors="primary:#f7b84b,secondary:#f06548" :options="defaultOptions1" :height="75"
-          :width="75" />
+        <lottie
+          class="avatar-xl"
+          colors="primary:#f7b84b,secondary:#f06548"
+          :options="defaultOptions1"
+          :height="75"
+          :width="75"
+        />
         <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
           <h4>Are you sure ?</h4>
           <p class="text-muted mx-4 mb-0">
@@ -913,7 +1129,9 @@ export default {
       </div>
       <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
         <BButton variant="light" size="w-sm" @click="deleteModal = false">Close</BButton>
-        <BButton variant="danger" size="w-sm" id="delete-record" @click="deleteData">Yes, Delete It!</BButton>
+        <BButton variant="danger" size="w-sm" id="delete-record" @click="deleteData"
+          >Yes, Delete It!</BButton
+        >
       </div>
     </BModal>
   </Layout>
