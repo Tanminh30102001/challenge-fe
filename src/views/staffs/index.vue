@@ -9,6 +9,7 @@ export default {
   data() {
     return {
       searchQuery: null,
+      searchTerm:"",
       page: 1,
       perPage: 8,
       pages: [],
@@ -82,6 +83,14 @@ export default {
           console.log(er);
         });
     },
+   async searchUser(){
+      const searchData={
+        search:this.searchTerm
+      }
+      const response = await axios.post(config.API_URL + "/searchUser", searchData);
+      this.candidatelist=response.data
+
+    },
     async addUsser(){
       try {
         const newUser = {
@@ -124,7 +133,7 @@ export default {
 
 <template>
   <Layout>
-    <PageHeader title="List View" pageTitle="Candidate Lists" />
+    <PageHeader title="Staffs" pageTitle="Staffs" />
     <BRow class="g-4 mb-4">
       <BCol sm="auto">
         <div>
@@ -142,7 +151,8 @@ export default {
               id="searchJob"
               autocomplete="off"
               placeholder="Search for candidate name or designation..."
-              v-model="searchQuery"
+              v-model="searchTerm"
+              @input="searchUser"
             />
             <i class="ri-search-line search-icon"></i>
           </div>
