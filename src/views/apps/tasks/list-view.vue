@@ -65,19 +65,19 @@ export default {
       //
       submitted: false,
       //
-      search:" ",
+      search: " ",
       type: null,
       priority: null,
       status: null,
       datefilter: null,
       //
       //static
-      totalTask:0,
-      totalPending:0,
-      totalInprogess:0,
-      totalDone:0,
-      totalNotStart:0,
-      overDeadline:0,
+      totalTask: 0,
+      totalPending: 0,
+      totalInprogess: 0,
+      totalDone: 0,
+      totalNotStart: 0,
+      overDeadline: 0,
       ////
 
       dataEdit: false,
@@ -160,7 +160,7 @@ export default {
     },
   },
   created() {
-    this.getStatic()
+    this.getStatic();
     this.setPages();
     this.fetchTasks();
     this.fetchStatus();
@@ -270,16 +270,16 @@ export default {
           console.error("Error:", error);
         });
     },
-    async getStatic(){
+    async getStatic() {
       try {
         const response = await axios.get(config.API_URL + "/staticTask");
-       console.log('static',response.data)
-       this.totalTask=response.data.total_tasks
-       this.totalNotStart=response.data.total_tasks_with_status_1
-       this.totalInprogess=response.data.total_tasks_with_status_2
-       this.totalPending=response.data.total_tasks_with_status_3
-       this.totalDone=response.data.total_tasks_with_status_4
-       this.overDeadline=response.data.overdue_tasks
+        console.log("static", response.data);
+        this.totalTask = response.data.total_tasks;
+        this.totalNotStart = response.data.total_tasks_with_status_1;
+        this.totalInprogess = response.data.total_tasks_with_status_2;
+        this.totalPending = response.data.total_tasks_with_status_3;
+        this.totalDone = response.data.total_tasks_with_status_4;
+        this.overDeadline = response.data.overdue_tasks;
       } catch (error) {
         console.error(error);
       }
@@ -321,7 +321,9 @@ export default {
             .then((response) => {
               const data = response.data.data;
               this.allTask = this.allTask.map((item) =>
-                item._id.toString() == data._id.toString() ? { ...item, ...data } : item
+                item._id.toString() == data._id.toString()
+                  ? { ...item, ...data }
+                  : item
               );
             })
             .catch((er) => {
@@ -331,7 +333,6 @@ export default {
       } else {
         this.submitted = true;
         this.event.created_id = JSON.parse(localStorage.getItem("user")).id;
-        console.log(this.event.assigned_to, "sss");
         if (
           this.submitted &&
           this.event.name &&
@@ -344,7 +345,6 @@ export default {
           this.event.assigned_to.length > 0
         ) {
           console.log("this.event", this.event);
-          // this.event.assigned_to = this.assignedTo;
           this.taskListModal = false;
           axios
             .post(config.API_URL + "/addTask", this.event)
@@ -359,8 +359,8 @@ export default {
     },
     searchTasks() {
       const searchData = {
-    search: this.search
-  };
+        search: this.search,
+      };
       console.log(this.search);
       axios
         .post(config.API_URL + "/search", searchData)
@@ -404,10 +404,14 @@ export default {
     deleteData() {
       if (this.event._id) {
         axios
-          .delete(`https://api-node.themesbrand.website/apps/task/${this.event._id}`)
+          .delete(
+            `https://api-node.themesbrand.website/apps/task/${this.event._id}`
+          )
           .then((response) => {
             if (response.data.status === "success") {
-              this.allTask = this.allTask.filter((item) => item._id != this.event._id);
+              this.allTask = this.allTask.filter(
+                (item) => item._id != this.event._id
+              );
             }
           })
           .catch((er) => {
@@ -510,12 +514,16 @@ export default {
 
         if (event.target.closest("tr").classList.contains("table-active")) {
           checkedCount > 0
-            ? (document.getElementById("remove-actions").style.display = "block")
-            : (document.getElementById("remove-actions").style.display = "none");
+            ? (document.getElementById("remove-actions").style.display =
+                "block")
+            : (document.getElementById("remove-actions").style.display =
+                "none");
         } else {
           checkedCount > 0
-            ? (document.getElementById("remove-actions").style.display = "block")
-            : (document.getElementById("remove-actions").style.display = "none");
+            ? (document.getElementById("remove-actions").style.display =
+                "block")
+            : (document.getElementById("remove-actions").style.display =
+                "none");
         }
       });
     });
@@ -534,7 +542,11 @@ export default {
               <div>
                 <p class="fw-medium text-muted mb-0">Total Tasks</p>
                 <h2 class="mt-4 ff-secondary fw-semibold">
-                  <count-to :startVal="0" :endVal="totalTask" :duration="5000"></count-to>
+                  <count-to
+                    :startVal="0"
+                    :endVal="totalTask"
+                    :duration="5000"
+                  ></count-to>
                 </h2>
                 <!-- <p class="mb-0 text-muted">
                   <BBadge class="bg-light text-success mb-0">
@@ -545,7 +557,9 @@ export default {
               </div>
               <div>
                 <div class="avatar-sm flex-shrink-0">
-                  <span class="avatar-title bg-info-subtle text-info rounded-circle fs-4">
+                  <span
+                    class="avatar-title bg-info-subtle text-info rounded-circle fs-4"
+                  >
                     <i class="ri-ticket-2-line"></i>
                   </span>
                 </div>
@@ -561,7 +575,11 @@ export default {
               <div>
                 <p class="fw-medium text-muted mb-0">Pending Tasks</p>
                 <h2 class="mt-4 ff-secondary fw-semibold">
-                  <count-to :startVal="0" :endVal="totalPending" :duration="5000"></count-to>
+                  <count-to
+                    :startVal="0"
+                    :endVal="totalPending"
+                    :duration="5000"
+                  ></count-to>
                 </h2>
                 <!-- <p class="mb-0 text-muted">
                   <BBadge class="bg-light text-danger mb-0">
@@ -590,7 +608,11 @@ export default {
               <div>
                 <p class="fw-medium text-muted mb-0">Inprogress Tasks</p>
                 <h2 class="mt-4 ff-secondary fw-semibold">
-                  <count-to :startVal="0" :endVal="totalInprogess" :duration="5000"></count-to>
+                  <count-to
+                    :startVal="0"
+                    :endVal="totalInprogess"
+                    :duration="5000"
+                  ></count-to>
                 </h2>
                 <!-- <p class="mb-0 text-muted">
                   <BBadge class="bg-light text-danger mb-0">
@@ -604,7 +626,7 @@ export default {
                   <span
                     class="avatar-title bg-warning-subtle text-warning rounded-circle fs-4"
                   >
-                    <i class=" las la-redo-alt"></i>
+                    <i class="las la-redo-alt"></i>
                   </span>
                 </div>
               </div>
@@ -619,7 +641,11 @@ export default {
               <div>
                 <p class="fw-medium text-muted mb-0">Not Starts Tasks</p>
                 <h2 class="mt-4 ff-secondary fw-semibold">
-                  <count-to :startVal="0" :endVal="totalNotStart" :duration="5000"></count-to>
+                  <count-to
+                    :startVal="0"
+                    :endVal="totalNotStart"
+                    :duration="5000"
+                  ></count-to>
                 </h2>
                 <!-- <p class="mb-0 text-muted">
                   <BBadge class="bg-light text-danger mb-0">
@@ -652,9 +678,8 @@ export default {
                     :startVal="0"
                     :endVal="totalDone"
                     :duration="5000"
-                    :decimals="2"
-                  ></count-to
-                  >
+                  ></count-to>
+                  <!-- :decimals="2" -->
                 </h2>
                 <!-- <p class="mb-0 text-muted">
                   <BBadge class="bg-light text-success mb-0">
@@ -683,7 +708,11 @@ export default {
               <div>
                 <p class="fw-medium text-muted mb-0">Tasks over deadline</p>
                 <h2 class="mt-4 ff-secondary fw-semibold">
-                  <count-to :startVal="0" :endVal="overDeadline" :duration="5000"></count-to>
+                  <count-to
+                    :startVal="0"
+                    :endVal="overDeadline"
+                    :duration="5000"
+                  ></count-to>
                 </h2>
                 <!-- <p class="mb-0 text-muted">
                   <BBadge class="bg-light text-danger mb-0">
@@ -723,7 +752,11 @@ export default {
                   >
                     <i class="ri-delete-bin-2-line"></i>
                   </BButton>
-                  <BButton variant="danger" class="add-btn" @click="toggleModal">
+                  <BButton
+                    variant="danger"
+                    class="add-btn"
+                    @click="toggleModal"
+                  >
                     <i class="ri-add-line align-bottom me-1"></i> Create Task
                   </BButton>
                 </div>
@@ -801,7 +834,10 @@ export default {
           </BCardBody>
           <BCardBody>
             <div class="table-responsive table-card mb-4">
-              <table class="table align-middle table-nowrap mb-0" id="tasksTable">
+              <table
+                class="table align-middle table-nowrap mb-0"
+                id="tasksTable"
+              >
                 <thead class="table-light text-muted">
                   <tr>
                     <th>ID</th>
@@ -817,7 +853,9 @@ export default {
                 <tbody class="list form-check-all">
                   <tr v-for="(task, index) of resultQuery" :key="index">
                     <td class="id">
-                      <router-link to="/apps/tasks-details" class="fw-medium link-primary"
+                      <router-link
+                        :to="{ name: 'tasks-details', params: { id: task.id } }"
+                        class="fw-medium link-primary"
                         >{{ task.task_code }}
                       </router-link>
                     </td>
@@ -836,11 +874,20 @@ export default {
                         <div class="flex-shrink-0 ms-4">
                           <ul class="list-inline tasks-list-menu mb-0">
                             <li class="list-inline-item">
-                              <router-link to="/apps/tasks-details"
-                                ><i class="ri-eye-fill align-bottom me-2 text-muted"></i
+                              <router-link
+                                :to="{
+                                  name: 'tasks-details',
+                                  params: { id: task.id },
+                                }"
+                                ><i
+                                  class="ri-eye-fill align-bottom me-2 text-muted"
+                                ></i
                               ></router-link>
                             </li>
-                            <li class="list-inline-item" @click="editDetails(task)">
+                            <li
+                              class="list-inline-item"
+                              @click="editDetails(task)"
+                            >
                               <BLink href="#"
                                 ><i
                                   class="ri-pencil-fill align-bottom me-2 text-muted"
@@ -872,7 +919,9 @@ export default {
                             :title="task.name"
                           >
                             <div class="mr-1">
-                              <span style="margin-right: 12px">{{ task.name }}</span>
+                              <span style="margin-right: 12px">{{
+                                task.name
+                              }}</span>
                             </div>
                           </BLink>
                         </div>
@@ -885,9 +934,12 @@ export default {
                         :class="{
                           'bg-secondary-subtle text-secondary':
                             task.status_task == 'In Process',
-                          'bg-info-subtle text-info': task.status_task == 'Not Start',
-                          'bg-success-subtle text-success': task.status_task == 'Done ',
-                          'bg-warning-subtle text-warning': task.status_task == 'Pending',
+                          'bg-info-subtle text-info':
+                            task.status_task == 'Not Start',
+                          'bg-success-subtle text-success':
+                            task.status_task == 'Done ',
+                          'bg-warning-subtle text-warning':
+                            task.status_task == 'Pending',
                         }"
                         >{{ task.status_task }}</span
                       >
@@ -916,14 +968,17 @@ export default {
                   />
                   <h5 class="mt-2">Sorry! No Result Found</h5>
                   <p class="text-muted mb-0">
-                    We've searched more than 200k+ tasks We did not find any tasks for you
-                    search.
+                    We've searched more than 200 tasks We did not find any tasks
+                    for you search.
                   </p>
                 </div>
               </div>
             </div>
 
-            <div class="d-flex justify-content-end" v-if="resultQuery.length >= 1">
+            <div
+              class="d-flex justify-content-end"
+              v-if="resultQuery.length >= 1"
+            >
               <div class="pagination-wrap hstack gap-2">
                 <BLink
                   class="page-item pagination-prev"
@@ -935,7 +990,10 @@ export default {
                 </BLink>
                 <ul class="pagination listjs-pagination mb-0">
                   <li
-                    :class="{ active: pageNumber == page, disabled: pageNumber == '...' }"
+                    :class="{
+                      active: pageNumber == page,
+                      disabled: pageNumber == '...',
+                    }"
                     v-for="(pageNumber, index) in pages"
                     :key="index"
                     @click="page = pageNumber"
@@ -1097,7 +1155,12 @@ export default {
           >
             Close
           </BButton>
-          <BButton type="submit" variant="success" id="add-btn" @click="handleSubmit">
+          <BButton
+            type="submit"
+            variant="success"
+            id="add-btn"
+            @click="handleSubmit"
+          >
             {{ dataEdit ? "Update" : "Add Task" }}
           </BButton>
         </div>
@@ -1128,8 +1191,14 @@ export default {
         </div>
       </div>
       <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-        <BButton variant="light" size="w-sm" @click="deleteModal = false">Close</BButton>
-        <BButton variant="danger" size="w-sm" id="delete-record" @click="deleteData"
+        <BButton variant="light" size="w-sm" @click="deleteModal = false"
+          >Close</BButton
+        >
+        <BButton
+          variant="danger"
+          size="w-sm"
+          id="delete-record"
+          @click="deleteData"
           >Yes, Delete It!</BButton
         >
       </div>

@@ -147,14 +147,12 @@ export default {
     },
   },
   created() {
-   
     this.setPages();
     this.fetchTasks();
     this.fetchStatus();
     this.fetchType();
     this.fetchPriority();
     this.fetchUser();
-    
   },
   filters: {
     trimWords(value) {
@@ -209,32 +207,31 @@ export default {
     async fetchTasks() {
       try {
         this.user_id = JSON.parse(localStorage.getItem("user")).id;
-        
+
         const response = await axios.get(
           `${config.API_URL}/getTaskByUser/${this.user_id}`
         );
         this.allTask = response.data;
-       
       } catch (error) {
         console.error(error);
       }
     },
-    filterData(){
-        const filterdata={
-          status_id:this.status,
-          type_id:this.type,
-          priority:this.priority
-        }
-       
-        axios.post(`${config.API_URL}/fillterWithUser/${this.user_id}`, filterdata)
-  .then(response => {
-    this.allTask=response.data
-   
-  })
-  .catch(error => {
-    // Xử lý lỗi nếu có
-    console.error('Error:', error);
-  })
+    filterData() {
+      const filterdata = {
+        status_id: this.status,
+        type_id: this.type,
+        priority: this.priority,
+      };
+
+      axios
+        .post(`${config.API_URL}/fillterWithUser/${this.user_id}`, filterdata)
+        .then((response) => {
+          this.allTask = response.data;
+        })
+        .catch((error) => {
+          // Xử lý lỗi nếu có
+          console.error("Error:", error);
+        });
     },
     formatDateTo(dateString) {
       // Tạo một đối tượng Date từ chuỗi ngày
@@ -274,7 +271,9 @@ export default {
             .then((response) => {
               const data = response.data.data;
               this.allTask = this.allTask.map((item) =>
-                item._id.toString() == data._id.toString() ? { ...item, ...data } : item
+                item._id.toString() == data._id.toString()
+                  ? { ...item, ...data }
+                  : item
               );
             })
             .catch((er) => {
@@ -284,7 +283,7 @@ export default {
       } else {
         this.submitted = true;
         this.event.created_id = JSON.parse(localStorage.getItem("user")).id;
-        
+
         if (
           this.submitted &&
           this.event.name &&
@@ -303,7 +302,6 @@ export default {
           axios
             .post(config.API_URL + "/addTask", this.event)
             .then((response) => {
-              
               this.allTask.unshift(response.data.data);
             })
             .catch((er) => {
@@ -328,7 +326,7 @@ export default {
       this.dataEdit = true;
       this.taskListModal = true;
       this.event = { ...data };
-     
+
       this.submitted = false;
     },
 
@@ -345,10 +343,14 @@ export default {
     deleteData() {
       if (this.event._id) {
         axios
-          .delete(`https://api-node.themesbrand.website/apps/task/${this.event._id}`)
+          .delete(
+            `https://api-node.themesbrand.website/apps/task/${this.event._id}`
+          )
           .then((response) => {
             if (response.data.status === "success") {
-              this.allTask = this.allTask.filter((item) => item._id != this.event._id);
+              this.allTask = this.allTask.filter(
+                (item) => item._id != this.event._id
+              );
             }
           })
           .catch((er) => {
@@ -364,14 +366,13 @@ export default {
     },
     searchTasks() {
       const searchData = {
-    search: this.search
-  };
+        search: this.search,
+      };
 
       axios
         .post(config.API_URL + "/search", searchData)
         .then((response) => {
           this.allTask = response.data;
-          
         })
         .catch((er) => {
           console.log(er);
@@ -416,8 +417,8 @@ export default {
         });
       }
     },
-   
-     setPages() {
+
+    setPages() {
       let numberOfPages = Math.ceil(this.allTask.length / this.perPage);
       this.pages = [];
       for (let index = 1; index <= numberOfPages; index++) {
@@ -466,12 +467,16 @@ export default {
 
         if (event.target.closest("tr").classList.contains("table-active")) {
           checkedCount > 0
-            ? (document.getElementById("remove-actions").style.display = "block")
-            : (document.getElementById("remove-actions").style.display = "none");
+            ? (document.getElementById("remove-actions").style.display =
+                "block")
+            : (document.getElementById("remove-actions").style.display =
+                "none");
         } else {
           checkedCount > 0
-            ? (document.getElementById("remove-actions").style.display = "block")
-            : (document.getElementById("remove-actions").style.display = "none");
+            ? (document.getElementById("remove-actions").style.display =
+                "block")
+            : (document.getElementById("remove-actions").style.display =
+                "none");
         }
       });
     });
@@ -494,7 +499,11 @@ export default {
                   <!-- <BButton variant="soft-danger" class="me-1" id="remove-actions" @click="deleteMultiple">
                     <i class="ri-delete-bin-2-line"></i>
                   </BButton> -->
-                  <BButton variant="danger" class="add-btn" @click="toggleModal">
+                  <BButton
+                    variant="danger"
+                    class="add-btn"
+                    @click="toggleModal"
+                  >
                     <i class="ri-add-line align-bottom me-1"></i> Create Task
                   </BButton>
                 </div>
@@ -572,7 +581,10 @@ export default {
           </BCardBody>
           <BCardBody>
             <div class="table-responsive table-card mb-4">
-              <table class="table align-middle table-nowrap mb-0" id="tasksTable">
+              <table
+                class="table align-middle table-nowrap mb-0"
+                id="tasksTable"
+              >
                 <thead class="table-light text-muted">
                   <tr>
                     <th>ID</th>
@@ -588,7 +600,9 @@ export default {
                 <tbody class="list form-check-all">
                   <tr v-for="(task, index) of resultQuery" :key="index">
                     <td class="id">
-                      <router-link to="/apps/tasks-details" class="fw-medium link-primary"
+                      <router-link
+                        :to="{ name: 'tasks-details', params: { id: task.id } }"
+                        class="fw-medium link-primary"
                         >{{ task.task_code }}
                       </router-link>
                     </td>
@@ -607,11 +621,20 @@ export default {
                         <div class="flex-shrink-0 ms-4">
                           <ul class="list-inline tasks-list-menu mb-0">
                             <li class="list-inline-item">
-                              <router-link to="/apps/tasks-details"
-                                ><i class="ri-eye-fill align-bottom me-2 text-muted"></i
+                              <router-link
+                                :to="{
+                                  name: 'tasks-details',
+                                  params: { id: task.id },
+                                }"
+                                ><i
+                                  class="ri-eye-fill align-bottom me-2 text-muted"
+                                ></i
                               ></router-link>
                             </li>
-                            <li class="list-inline-item" @click="editDetails(task)">
+                            <li
+                              class="list-inline-item"
+                              @click="editDetails(task)"
+                            >
                               <BLink href="#"
                                 ><i
                                   class="ri-pencil-fill align-bottom me-2 text-muted"
@@ -638,7 +661,9 @@ export default {
                             :title="task.name"
                           >
                             <div class="mr-1">
-                              <span style="margin-right: 12px">{{ task.name }}</span>
+                              <span style="margin-right: 12px">{{
+                                task.name
+                              }}</span>
                             </div>
                           </BLink>
                         </div>
@@ -651,9 +676,12 @@ export default {
                         :class="{
                           'bg-secondary-subtle text-secondary':
                             task.status_task == 'In Process',
-                          'bg-info-subtle text-info': task.status_task == 'Not Start',
-                          'bg-success-subtle text-success': task.status_task == 'Done ',
-                          'bg-warning-subtle text-warning': task.status_task == 'Pending',
+                          'bg-info-subtle text-info':
+                            task.status_task == 'Not Start',
+                          'bg-success-subtle text-success':
+                            task.status_task == 'Done ',
+                          'bg-warning-subtle text-warning':
+                            task.status_task == 'Pending',
                         }"
                         >{{ task.status_task }}</span
                       >
@@ -682,14 +710,17 @@ export default {
                   />
                   <h5 class="mt-2">Sorry! No Result Found</h5>
                   <p class="text-muted mb-0">
-                    We've searched more than 200k+ tasks We did not find any tasks for you
-                    search.
+                    We've searched more than 200k+ tasks We did not find any
+                    tasks for you search.
                   </p>
                 </div>
               </div>
             </div>
 
-            <div class="d-flex justify-content-end" v-if="resultQuery.length >= 1">
+            <div
+              class="d-flex justify-content-end"
+              v-if="resultQuery.length >= 1"
+            >
               <div class="pagination-wrap hstack gap-2">
                 <BLink
                   class="page-item pagination-prev"
@@ -701,7 +732,10 @@ export default {
                 </BLink>
                 <ul class="pagination listjs-pagination mb-0">
                   <li
-                    :class="{ active: pageNumber == page, disabled: pageNumber == '...' }"
+                    :class="{
+                      active: pageNumber == page,
+                      disabled: pageNumber == '...',
+                    }"
                     v-for="(pageNumber, index) in pages"
                     :key="index"
                     @click="page = pageNumber"
@@ -863,7 +897,12 @@ export default {
           >
             Close
           </BButton>
-          <BButton type="submit" variant="success" id="add-btn" @click="handleSubmit">
+          <BButton
+            type="submit"
+            variant="success"
+            id="add-btn"
+            @click="handleSubmit"
+          >
             {{ dataEdit ? "Update" : "Add Task" }}
           </BButton>
         </div>
@@ -894,8 +933,14 @@ export default {
         </div>
       </div>
       <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-        <BButton variant="light" size="w-sm" @click="deleteModal = false">Close</BButton>
-        <BButton variant="danger" size="w-sm" id="delete-record" @click="deleteData"
+        <BButton variant="light" size="w-sm" @click="deleteModal = false"
+          >Close</BButton
+        >
+        <BButton
+          variant="danger"
+          size="w-sm"
+          id="delete-record"
+          @click="deleteData"
           >Yes, Delete It!</BButton
         >
       </div>
