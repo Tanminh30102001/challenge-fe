@@ -79,8 +79,7 @@ export default {
         this.user.dial_code = ''; // Reset dial code if selected country is not found
       }
     },
-    // Try to register the user in with the email, username
-    // and password they provided.
+
     async tryToRegisterIn() {
       this.submitted = true;
       // stop here if form is invalid
@@ -94,12 +93,7 @@ export default {
         username:this.user.username,
         email: this.user.email,
         password: this.user.password,
-        // re_password: this.user.confirm_password,
         fullname:this.user.fullname,
-        // phone:this.user.phone,
-        // country_name:this.user.country_name,
-        // country_code:this.user.country_code,
-        // referral_code:this.user.referral_code
       });
       console.log(result.status)
       if(result.status == 200){
@@ -111,15 +105,7 @@ export default {
         return this.regError = 'Something went wrong. Please Try again';
       }
       
-      // if (result.status === 200) {
-      //   this.isRegisterError = true;
-      //   console.log(result.data)
-      //   return this.regError = result.data.message;
-      // }
-      // localStorage.setItem('jwt', result.data.token);
-      // this.$router.push({
-      //   path: '/'
-      // });
+
 
     },
   },

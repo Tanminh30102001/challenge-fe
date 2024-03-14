@@ -74,7 +74,8 @@
     "@vue/cli-service": "~5.0.8",
     "@vue/compiler-sfc": "^3.2.45",
     "eslint": "^8.31.0",
-    "eslint-plugin-vue": "^7.0.0"
+    "eslint-plugin-vue": "^7.0.0",
+    "gulp-sass": "^5.1.0"
   },
   "resolutions": {
     "autoprefixer": "10.4.5"

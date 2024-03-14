@@ -16,10 +16,8 @@ export default {
       date: null,
       addacc: false,
       alertfail:false,
-      brokerData: [
-        { broker: 'MetaQuotes', server: ['MetaQuotes-Demo'] },
-        { broker: 'EXNESS', server: ['ExnessUK-Real10', 'Exness-Real', 'Exness-Trial', 'Exness-Server', 'Exness-Real2', 'ExnessCY-Trial', 'Exness-Real3', 'Exness-Real4', 'Exness-Real5', 'Exness-Real6', 'Exness-Real7', 'Exness-Real8', 'Exness-Real9', 'Exness-Real10', 'Exness-Real11', 'Exness-Real12', 'Exness-Real13', 'Exness-Real14', 'Exness-Real15', 'Exness-Real16', 'Exness-Real17', 'Exness-Real18', 'Exness-Real19', 'Exness-Real20', 'Exness-Real21', 'Exness-Real22', 'Exness-Real23', 'Exness-Real24', 'Exness-Real25', 'Exness-Real26', 'Exness-Real27', 'Exness-Real28', 'Exness-Real29', 'Exness-Real30', 'Exness-Real31', 'Exness-Real32', 'Exness-Real33', 'Exness-Real34', 'Exness-Real35', 'Exness-Real36', 'Exness-Trial2', 'Exness-Trial3', 'Exness-Trial4', 'Exness-Trial5', 'Exness-Trial6', 'Exness-Trial7', 'Exness-Trial8', 'Exness-Trial9', 'Exness-Trial10', 'Exness-Trial11', 'Exness-Trial12', 'Exness-Trial13', 'Exness-Trial14',] },
-      ],
+      disableChangePassword:false,
+      passwordMismatch:false,
       selectedBroker: null,
       selectedServer: null,
       accountTrade: null,
@@ -44,32 +42,11 @@ export default {
     // flatPickr
   },
   computed: {
-    selectedBrokerServers() {
-      const selectedBrokerObj = this.brokerData.find(brokerObj => brokerObj.broker === this.selectedBroker);
-      return selectedBrokerObj ? selectedBrokerObj.server : [];
-    },
-    defaultSelectedServer() {
-      return this.selectedBrokerServers.length > 0 ? this.selectedBrokerServers[0] : null;
-    }
   },
   watch: {
-    selectedBroker(newValue) {
-      if (newValue) {
-        this.selectedServer = this.defaultSelectedServer;
-        this.formData.broker = newValue;
-        this.formData.servername = this.selectedServer;
-      }
-    },
-    selectedServer(newValue) {
-      if (newValue) {
-        this.formData.servername = newValue;
-      }
-    }
   },
   created() {
-    this.getAccountTrade();
-    this.account_id = localStorage.getItem('account_ID');
-    this.formData.account_id = this.account_id;
+    
   },
   methods: {
     successmsg() {
@@ -83,17 +60,25 @@ export default {
     },
     changepass() {
       var data = {
-        password: document.getElementById('oldpasswordInput').value,
-        new_password: document.getElementById('newpasswordInput').value,
-        confirm_password: document.getElementById('confirmpasswordInput').value
+        current_password: document.getElementById('oldpasswordInput').value,
+        new_password: document.getElementById('newpasswordInput').value
       };
-      axios.post(config.API_URL+'/changePassword/'+localStorage.getItem('account_ID'),data).then((data) => {
+      const confirmPassword = document.getElementById('confirmpasswordInput').value;
+      const newPassword = document.getElementById('newpasswordInput').value;
+      if (confirmPassword === ''|| confirmPassword !== newPassword) {
+     
+      this.disableChangePassword = true; 
+      this.passwordMismatch = true; 
+    } else {
+      axios.post(config.API_URL+'/changePassWord/'+this.user.id,data).then((data) => {
         console.log(data);
         this.successmsg();
       }).catch((e) => {
         this.alertfail=true
         console.log(e);
       });
+    }
+      
     },
     updatedata() {
       var userid = localStorage.getItem('userid');
@@ -117,35 +102,11 @@ export default {
         console.log(e);
       });
     },
-    addaccount() {
-      this.addacc = !this.addacc
-    },
-    getSelectedBrokerServers(selectedBroker) {
-      const broker = this.brokerData.find(brokerObj => brokerObj.broker === selectedBroker);
-      return broker ? broker.server : [];
-    },
-    updateServers() {
-      this.selectedServer = this.defaultSelectedServer;
-    },
-    async getAccountTrade() {
-      await axios
-        .get(config.API_URL + '/user/getacc/' + localStorage.getItem('account_ID'))
-        .then((res) => {
-          this.accountTrade = res.data;
-          this.accountTradeLen = this.accountTrade.length
-        })
-        .catch((e) => console.log(e));
-    },
-    async createAccountTrade() {
-      await axios
-        .post(config.API_URL +'/user/createacc',this.formData
-        )
-        .then((res) => {
-          console.log(res.data);
-          window.location.reload();
-        })
-        .catch((e) => console.log(e));
-    }
+
+    
+   
+    
+    
   },
 };
 </script>
@@ -154,8 +115,8 @@ export default {
   <Layout>
     <div class="position-relative mx-n4 mt-n4">
       <div class="profile-wid-bg profile-setting-img">
-        <img src="@/assets/images/profile-bg.jpg" class="profile-wid-img" alt="" />
-        <div class="overlay-content">
+        <img src="../../../assets/images/galaxy/img-1.png" class="profile-wid-img" alt="" />
+        <!-- <div class="overlay-content">
           <div class="text-end p-3">
             <div class="p-0 ms-auto rounded-circle profile-photo-edit">
               <input id="profile-foreground-img-file-input" type="file" class="profile-foreground-img-file-input" />
@@ -165,7 +126,7 @@ export default {
               </label>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
 
@@ -196,8 +157,8 @@ export default {
                   </label>
                 </div>
               </div>
+              <p class="text-muted mb-0">{{ user.username }} </p>
               <h5 class="fs-16 mb-1">{{ user.fullname }}</h5>
-              <p class="text-muted mb-0">{{ user.username }}</p>
             </div>
           </BCardBody>
         </BCard>
@@ -419,6 +380,7 @@ export default {
               </BTab> -->
 
               <BTab title="Change Password">
+                
                 <BAlert :model-value="true" v-model="alertfail" variant="danger" show dismissible>
                   <strong>Something is very wrong! Please try again</strong> 
                 </BAlert>
@@ -443,18 +405,21 @@ export default {
                         <label for="confirmpasswordInput" class="form-label">Confirm Password*</label>
                         <input type="password" class="form-control" id="confirmpasswordInput"
                           placeholder="Confirm password" />
+                          <div v-if="passwordMismatch=true" class="invalid-feedback">
+                            <span>This field is required</span>
+                          </div>
                       </div>
                     </BCol>
                     <BCol lg="12">
-                      <div class="mb-3">
+                      <!-- <div class="mb-3">
                         <BLink href="javascript:void(0);" class="link-primary text-decoration-underline">Forgot
                           Password
                           ?</BLink>
-                      </div>
+                      </div> -->
                     </BCol>
                     <BCol lg="12">
                       <div class="text-end">
-                        <BButton type="submit" variant="success" @click="changepass">
+                        <BButton type="submit" variant="success" @click="changepass" :disabled="disableChangePassword">
                           Change Password
                         </BButton>
                       </div>
@@ -628,7 +593,7 @@ export default {
                         <label for="exampleFormControlTextarea" class="form-label">Description</label>
                         <textarea class="form-control" id="exampleFormControlTextarea"
                           placeholder="Enter your description" rows="3">
-Hi I'm Anna Adame,It will be as simple as Occidental; in fact, it will be Occidental. To an English person, it will seem like simplified English, as a skeptical Cambridge friend of mine told me what Occidental is European languages are members of the same family.</textarea>
+                                        Hi I'm Anna Adame,It will be as simple as Occidental; in fact, it will be Occidental. To an English person, it will seem like simplified English, as a skeptical Cambridge friend of mine told me what Occidental is European languages are members of the same family.</textarea>
                       </div>
                     </BCol>
                     <BCol lg="12">
@@ -757,8 +722,8 @@ Hi I'm Anna Adame,It will be as simple as Occidental; in fact, it will be Occide
                     </div>
                   </BCol>
                 </form>
-              </BTab>
-              <BTab title="Privacy Policy">
+              </BTab> -->
+              <!-- <BTab title="Privacy Policy">
                 <div class="mb-4 pb-2 pt-4">
                   <h5 class="card-title text-decoration-underline mb-3">
                     Security:
