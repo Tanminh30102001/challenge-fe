@@ -72,8 +72,17 @@ export default {
         console.error(error);
       }
     },
+    blockUser(id){
+      axios
+        .patch(`${config.API_URL}/blockUser/${id}`, this.event)
+        .then(() => {
+          this.getAllUser();
+        })
+        .catch((er) => {
+          console.log(er);
+        });
+    },
     activeUser(id) {
-      console.log(id);
       axios
         .patch(`${config.API_URL}/approveUser/${id}`, this.event)
         .then(() => {
@@ -156,17 +165,6 @@ export default {
             />
             <i class="ri-search-line search-icon"></i>
           </div>
-          <!-- <div class="w-md">
-            <select class="form-select" data-choices data-choices-search-false>
-              <option value="All">All</option>
-              <option value="Today">Today</option>
-              <option value="Yesterday" selected>Yesterday</option>
-              <option value="Last 7 Days">Last 7 Days</option>
-              <option value="Last 30 Days">Last 30 Days</option>
-              <option value="This Month">This Month</option>
-              <option value="Last Year">Last Year</option>
-            </select>
-          </div> -->
         </div>
       </BCol>
     </BRow>
@@ -186,7 +184,10 @@ export default {
                 </div>
               </div>
               <div class="ms-3">
-                <router-link to="/pages/profile">
+                <router-link :to="{
+                  name: 'profile',
+                  params: { id: data.id },
+                }" >
                   <h5 class="fs-16 mb-2">{{ data.fullname }}</h5>
                 </router-link>
                 <p class="text-muted mb-0">{{ data.username }}</p>
@@ -224,6 +225,14 @@ export default {
                   :disabled="data.approve === 1"
                 >
                   <i class="ri-check-double-line"></i>Active</BButton
+                >
+                <BButton
+                  href="#!"
+                  class="btn btn-soft-danger me-1"
+                  @click="blockUser(data.id)"
+                  :disabled="data.approve === 0"
+                >
+                  <i class=" las la-ban"></i>Block</BButton
                 >
               </div>
             </div>

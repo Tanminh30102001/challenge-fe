@@ -894,12 +894,6 @@ export default {
                                 ></i
                               ></BLink>
                             </li>
-                            <!-- <li class="list-inline-item">
-                              <BLink class="remove-item-btn" href="javascript:void(0);"
-                                @click="deleteModalToggle(task)">
-                                <i class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>
-                              </BLink>
-                            </li> -->
                           </ul>
                         </div>
                       </div>

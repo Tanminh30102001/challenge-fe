@@ -821,7 +821,13 @@ export default [
     component: () => import("../views/pages/starter"),
   },
   {
-    path: "/pages/profile",
+    path: "/config",
+    name: "config",
+    meta: { title: "General Config", authRequired: true },
+    component: () => import("../views/config/index"),
+  },
+  {
+    path: "/pages/profile/:id",
     name: "profile",
     meta: { title: "Profile", authRequired: true },
     component: () => import("../views/pages/profile/simple"),
