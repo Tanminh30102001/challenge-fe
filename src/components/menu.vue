@@ -266,7 +266,7 @@ export default {
             </span>
           </BLink>
           <BLink
-            v-if="this.role === 2"
+            v-if="this.role !== 1"
             class="nav-link menu-link"
             href="#sidebarDashboards"
             role="button"
@@ -298,7 +298,57 @@ export default {
               </router-link>
             </span>
           </BLink>
+         
           <BLink
+            class="nav-link menu-link"
+            href="#sidebarDashboards"
+            role="button"
+            aria-expanded="false"
+            aria-controls="sidebarDashboards"
+          >
+            <router-link to="/pages/coming-soon" class="nav-link px-0 py-0">
+              <i class="ri-pages-line"></i>
+            </router-link>
+            <span data-key="t-dashboards">
+              <router-link to="/pages/coming-soon" class="nav-link">
+                {{ $t("Forum") }}
+              </router-link>
+            </span>
+          </BLink>
+          <BLink
+            class="nav-link menu-link"
+            href="#sidebarDashboards"
+            role="button"
+            aria-expanded="false"
+            aria-controls="sidebarDashboards"
+          >
+            <router-link to="/pages/coming-soon" class="nav-link px-0 py-0">
+              <i class="ri-rocket-line"></i>
+            </router-link>
+            <span data-key="t-dashboards">
+              <router-link to="/pages/coming-soon" class="nav-link">
+                {{ $t("Plans ") }}
+              </router-link>
+            </span>
+          </BLink>
+          <BLink
+            class="nav-link menu-link"
+            href="#sidebarDashboards"
+            role="button"
+            aria-expanded="false"
+            aria-controls="sidebarDashboards"
+          >
+            <router-link to="/pages/maintenance" class="nav-link px-0 py-0">
+              <i class=" ri-chat-quote-fill"></i>
+            </router-link>
+            <span data-key="t-dashboards">
+              <router-link to="/pages/coming-soon" class="nav-link">
+                {{ $t("Rooms chatings") }}
+              </router-link>
+            </span>
+          </BLink>
+          <BLink
+          v-if="this.role !== 1"
             class="nav-link menu-link"
             href="#sidebarDashboards"
             role="button"
@@ -311,6 +361,23 @@ export default {
             <span data-key="t-dashboards">
               <router-link to="/config" class="nav-link">
                 {{ $t("Config") }}
+              </router-link>
+            </span>
+          </BLink>
+          <BLink
+         
+            class="nav-link menu-link"
+            href="#sidebarDashboards"
+            role="button"
+            aria-expanded="false"
+            aria-controls="sidebarDashboards"
+          >
+            <router-link to="/pages/maintenance" class="nav-link px-0 py-0">
+              <i class="ri-book-open-fill"></i>
+            </router-link>
+            <span data-key="t-dashboards">
+              <router-link to="/pages/maintenance" class="nav-link">
+                {{ $t("Wiki and docs") }}
               </router-link>
             </span>
           </BLink>
