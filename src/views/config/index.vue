@@ -3,6 +3,7 @@ import Layout from "@/layouts/main.vue";
 import PageHeader from "@/components/page-header";
 import axios from "axios";
 import config from "../../../globalConfig";
+import Swal from "sweetalert2";
 
 export default {
   data() {
@@ -62,6 +63,7 @@ export default {
         .then(() => {
           this.fetchStatus();
           this.addStatus = false;
+          this.successmsgAddNew()
         })
         .catch((er) => {
           console.log(er);
@@ -81,6 +83,7 @@ export default {
         .then(() => {
           this.fetchStatus();
           this.updateStatusModals = false;
+          this.successmsgUpdate()
         })
         .catch((er) => {
           console.log(er);
@@ -91,11 +94,28 @@ export default {
         .delete(config.API_URL + "/deleteStatus/" + id)
         .then(() => {
           this.fetchStatus();
-          this.addStatus = false;
+          this.saError()
         })
         .catch((er) => {
           console.log(er);
         });
+    },
+    saError() {
+      Swal.fire({
+        title: "Oops...",
+        text: "You just deleted a status  😢",
+        icon: "error",
+        customClass: {
+          confirmButton: "btn btn-primary w-xs mt-2",
+        },
+        buttonsStyling: false,
+      });
+    },
+    successmsgAddNew() {
+      Swal.fire("Good job!", "You added new satus", "success");
+    },
+    successmsgUpdate() {
+      Swal.fire("Good job!", "You updated Status", "success");
     },
   },
 };
@@ -186,12 +206,12 @@ export default {
           </table>
         </BRow>
       </BTab>
-      <BTab title="OVV" class="nav-item pt-4">
+      <BTab title="Priority" class="nav-item pt-4">
         <template #title>
           <i class="ri-airplay-fill d-inline-block d-md-none"></i>
-          <span class="d-none d-md-inline-block">OVV</span>
+          <span class="d-none d-md-inline-block">Priority</span>
         </template>
-        <BRow> asdasdasd aszxc zxczxc </BRow>
+        <BRow> Coming soon ... </BRow>
       </BTab>
     </BTabs>
     <BModal

@@ -50,6 +50,9 @@ export default {
     
   },
   methods: {
+    successmsgUpdate() {
+      Swal.fire("Good job!", "You updated the your profile", "success");
+    },
     successmsg() {
       Swal.fire({
         position: "top-mid",
@@ -96,6 +99,7 @@ export default {
       };
       axios.patch( config.API_URL + "/updateUser/" + this.user.id, data).then((response) => {
         localStorage.setItem('user', JSON.stringify(response.data.user));
+        this.successmsgUpdate();
         console.log(response.data);
       }).catch((e) => {
         console.log(e);
